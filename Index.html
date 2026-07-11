@@ -686,12 +686,22 @@
             onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='#E8D5C4'"
             onkeydown="if(event.key==='Enter')doLogin()"/>
         </div>
-        <div style="margin-bottom:18px">
+        <div style="margin-bottom:10px">
           <label style="font-size:12px;font-weight:600;color:#8B5E52;display:block;margin-bottom:5px">Password</label>
-          <input id="loginPassword" type="password" placeholder="Enter your password"
-            style="width:100%;padding:11px 14px;border-radius:9px;border:1.5px solid #E8D5C4;font-size:14px;outline:none;box-sizing:border-box;transition:.15s"
-            onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='#E8D5C4'"
-            onkeydown="if(event.key==='Enter')doLogin()"/>
+          <div style="position:relative">
+            <input id="loginPassword" type="password" placeholder="Enter your password"
+              style="width:100%;padding:11px 44px 11px 14px;border-radius:9px;border:1.5px solid #E8D5C4;font-size:14px;outline:none;box-sizing:border-box;transition:.15s"
+              onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='#E8D5C4'"
+              onkeydown="if(event.key==='Enter')doLogin()"/>
+            <button type="button" onclick="togglePwdVisibility('loginPassword','loginPwdEye')" id="loginPwdEye"
+              style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:17px;padding:4px;color:#8B5E52;line-height:1">👁</button>
+          </div>
+        </div>
+        <div style="text-align:right;margin-bottom:16px">
+          <button type="button" onclick="doLoginOTP()"
+            style="background:none;border:none;color:var(--primary);font-size:12px;font-weight:600;cursor:pointer;text-decoration:underline;padding:0">
+            Login with OTP →
+          </button>
         </div>
         <div id="loginError" style="display:none;background:#FBE9E7;color:#C62828;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px"></div>
         <button onclick="doLogin()"
@@ -729,6 +739,12 @@
             onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='#E8D5C4'"/>
         </div>
         <div style="margin-bottom:12px">
+          <label style="font-size:12px;font-weight:600;color:#8B5E52;display:block;margin-bottom:5px">Email Address</label>
+          <input id="regEmail" type="email" placeholder="Enter your email address"
+            style="width:100%;padding:11px 14px;border-radius:9px;border:1.5px solid #E8D5C4;font-size:14px;outline:none;box-sizing:border-box"
+            onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='#E8D5C4'"/>
+        </div>
+        <div style="margin-bottom:12px">
           <label style="font-size:12px;font-weight:600;color:#8B5E52;display:block;margin-bottom:5px">Mobile Number</label>
           <div style="display:flex;gap:6px">
             <select id="regCountryCode" style="padding:11px 8px;border-radius:9px;border:1.5px solid #E8D5C4;font-size:13px;outline:none;background:#fff;color:#5a3e36;min-width:90px"
@@ -751,16 +767,24 @@
         </div>
         <div style="margin-bottom:12px">
           <label style="font-size:12px;font-weight:600;color:#8B5E52;display:block;margin-bottom:5px">Password</label>
-          <input id="regPassword" type="password" placeholder="Create a password (min 4 chars)"
-            style="width:100%;padding:11px 14px;border-radius:9px;border:1.5px solid #E8D5C4;font-size:14px;outline:none;box-sizing:border-box"
-            onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='#E8D5C4'"/>
+          <div style="position:relative">
+            <input id="regPassword" type="password" placeholder="Create a password (min 4 chars)"
+              style="width:100%;padding:11px 44px 11px 14px;border-radius:9px;border:1.5px solid #E8D5C4;font-size:14px;outline:none;box-sizing:border-box"
+              onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='#E8D5C4'"/>
+            <button type="button" onclick="togglePwdVisibility('regPassword','regPwdEye')" id="regPwdEye"
+              style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:17px;padding:4px;color:#8B5E52;line-height:1">👁</button>
+          </div>
         </div>
         <div style="margin-bottom:16px">
           <label style="font-size:12px;font-weight:600;color:#8B5E52;display:block;margin-bottom:5px">Confirm Password</label>
-          <input id="regConfirm" type="password" placeholder="Repeat password"
-            style="width:100%;padding:11px 14px;border-radius:9px;border:1.5px solid #E8D5C4;font-size:14px;outline:none;box-sizing:border-box"
-            onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='#E8D5C4'"
-            onkeydown="if(event.key==='Enter')doRegister()"/>
+          <div style="position:relative">
+            <input id="regConfirm" type="password" placeholder="Repeat password"
+              style="width:100%;padding:11px 44px 11px 14px;border-radius:9px;border:1.5px solid #E8D5C4;font-size:14px;outline:none;box-sizing:border-box"
+              onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='#E8D5C4'"
+              onkeydown="if(event.key==='Enter')doRegister()"/>
+            <button type="button" onclick="togglePwdVisibility('regConfirm','regConfirmEye')" id="regConfirmEye"
+              style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:17px;padding:4px;color:#8B5E52;line-height:1">👁</button>
+          </div>
         </div>
         <div id="registerError" style="display:none;background:#FBE9E7;color:#C62828;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px"></div>
         <div id="registerSuccess" style="display:none;background:#E8F5E9;color:#2E7D32;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px"></div>
@@ -4867,6 +4891,28 @@ function adminRejectQuotation(qId){
 }
 
 // ── OTP STATE ────────────────────────────────────────────────
+function togglePwdVisibility(inputId, btnId) {
+  var inp = document.getElementById(inputId);
+  var btn = document.getElementById(btnId);
+  if(!inp) return;
+  if(inp.type === 'password') { inp.type = 'text'; if(btn) btn.textContent = '🙈'; }
+  else { inp.type = 'password'; if(btn) btn.textContent = '👁'; }
+}
+
+function doLoginOTP() {
+  var username = (document.getElementById('loginUsername').value || '').trim().toLowerCase();
+  var errEl = document.getElementById('loginError');
+  if(!username) { showAuthError(errEl, 'Please enter your username first.'); return; }
+  if(username === 'admin') { showAuthError(errEl, 'Admin must use password login.'); return; }
+  var users = loadUsers();
+  if(!users[username]) { showAuthError(errEl, 'Username not found. Please register first.'); return; }
+  var mobile = users[username].mobile;
+  if(!mobile) { showAuthError(errEl, 'No mobile number linked to this account.'); return; }
+  var otp = String(Math.floor(100000 + Math.random() * 900000));
+  _pendingOTP = { type: 'login', code: otp, username: username };
+  showOTPModal(mobile, otp);
+}
+
 var _pendingOTP = null;
 
 // ── REGISTER ─────────────────────────────────────────────────
@@ -4874,6 +4920,7 @@ function doRegister() {
   var firstName   = (document.getElementById('regFirstName').value || '').trim();
   var lastName    = (document.getElementById('regLastName').value  || '').trim();
   var username    = (document.getElementById('regUsername').value  || '').trim().toLowerCase();
+  var email       = (document.getElementById('regEmail').value     || '').trim();
   var password    =  document.getElementById('regPassword').value  || '';
   var confirm     =  document.getElementById('regConfirm').value   || '';
   var countryCode = (document.getElementById('regCountryCode').value || '+91');
@@ -4885,6 +4932,9 @@ function doRegister() {
 
   if(!firstName || !lastName || !username || !password) {
     showAuthError(errEl, 'Please fill in all fields.'); return;
+  }
+  if(email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showAuthError(errEl, 'Please enter a valid email address.'); return;
   }
   if(!mobileRaw || mobileRaw.length < 8) {
     showAuthError(errEl, 'Please enter a valid mobile number.'); return;
@@ -4909,8 +4959,8 @@ function doRegister() {
   // Generate OTP and show verification modal
   var otp = String(Math.floor(100000 + Math.random() * 900000));
   _pendingOTP = {
-    code: otp, username: username, firstName: firstName, lastName: lastName,
-    mobile: countryCode + mobileRaw, password: password
+    type: 'register', code: otp, username: username, firstName: firstName, lastName: lastName,
+    mobile: countryCode + mobileRaw, password: password, email: email
   };
   showOTPModal(countryCode + mobileRaw, otp);
 }
@@ -4918,12 +4968,15 @@ function doRegister() {
 function showOTPModal(mobile, otp) {
   var existing = document.getElementById('otpOverlay');
   if(existing) existing.remove();
+  var isLogin = _pendingOTP && _pendingOTP.type === 'login';
+  var btnLabel = isLogin ? 'Verify &amp; Sign In' : 'Verify &amp; Create Account';
+  var btnStyle = isLogin ? 'background:linear-gradient(135deg,var(--primary-dark),var(--primary))' : 'background:linear-gradient(135deg,#2E7D32,#43A047)';
   var ov = document.createElement('div');
   ov.id = 'otpOverlay';
   ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:9999';
   ov.innerHTML = '<div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:340px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.2)">'+
     '<div style="font-size:32px;text-align:center;margin-bottom:8px">📱</div>'+
-    '<h3 style="text-align:center;color:#C8604A;margin:0 0 6px;font-size:18px">Verify Mobile Number</h3>'+
+    '<h3 style="text-align:center;color:#C8604A;margin:0 0 6px;font-size:18px">'+(isLogin?'Login via OTP':'Verify Mobile Number')+'</h3>'+
     '<p style="text-align:center;color:#8B5E52;font-size:13px;margin:0 0 4px">OTP sent to <strong>'+mobile+'</strong></p>'+
     '<div style="background:#FFF8F0;border:1.5px solid #F5D0C0;border-radius:10px;padding:14px;text-align:center;margin:14px 0">'+
       '<div style="font-size:11px;color:#8B5E52;margin-bottom:4px">Your OTP (simulated)</div>'+
@@ -4934,7 +4987,7 @@ function showOTPModal(mobile, otp) {
       ' onfocus="this.style.borderColor=\'var(--primary)\'" onblur="this.style.borderColor=\'#E8D5C4\'"'+
       ' oninput="this.value=this.value.replace(/\\D/g,\'\')" onkeydown="if(event.key===\'Enter\')verifyOTP()"/>'+
     '<div id="otpError" style="display:none;color:#C62828;font-size:12px;text-align:center;margin-bottom:10px"></div>'+
-    '<button onclick="verifyOTP()" style="width:100%;padding:13px;background:linear-gradient(135deg,#2E7D32,#43A047);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:8px">Verify &amp; Create Account</button>'+
+    '<button onclick="verifyOTP()" style="width:100%;padding:13px;'+btnStyle+';color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:8px">'+btnLabel+'</button>'+
     '<button onclick="document.getElementById(\'otpOverlay\').remove();_pendingOTP=null" style="width:100%;padding:10px;background:none;border:1px solid #E8D5C4;border-radius:10px;font-size:13px;cursor:pointer;color:#8B5E52">Cancel</button>'+
   '</div>';
   document.body.appendChild(ov);
@@ -4950,13 +5003,28 @@ function verifyOTP() {
     errEl.style.display = 'block';
     return;
   }
-  // OTP verified — create account
+  // OTP verified — LOGIN flow
+  if(_pendingOTP.type === 'login') {
+    document.getElementById('otpOverlay').remove();
+    var uname = _pendingOTP.username;
+    _pendingOTP = null;
+    var users = loadUsers();
+    var u = users[uname];
+    currentUser = { username: uname, firstName: u.firstName, lastName: u.lastName, isGuest: false, isAdmin: u.role === 'admin' };
+    saveSession(currentUser);
+    loadUserState(uname);
+    onLoginSuccess();
+    if(u.role === 'admin') setTimeout(showAdminPanel, 150);
+    return;
+  }
+  // OTP verified — REGISTER flow
   var users = loadUsers();
   users[_pendingOTP.username] = {
     firstName:  _pendingOTP.firstName,
     lastName:   _pendingOTP.lastName,
     password:   btoa(_pendingOTP.password),
     mobile:     _pendingOTP.mobile,
+    email:      _pendingOTP.email || '',
     role:       'user',
     createdAt:  new Date().toISOString(),
     savedPlans: [],
