@@ -927,6 +927,15 @@
   <div class="stats-grid" id="statsGrid"></div>
 
   <div id="tab-plan" class="tab-content">
+    <div class="toolbar">
+      <input class="search-input" id="searchInput" placeholder="🔍 Search meals..." oninput="renderPlan()"/>
+      <div class="filter-btns">
+        <button class="flt-btn active" onclick="setFilter('all',this)">All</button>
+        <button class="flt-btn" onclick="setFilter('breakfast',this)">Breakfast</button>
+        <button class="flt-btn" onclick="setFilter('lunch',this)">Lunch</button>
+        <button class="flt-btn" onclick="setFilter('dinner',this)">Dinner</button>
+      </div>
+    </div>
     <div class="days-grid" id="daysGrid"></div>
     <div id="emptyMsg" class="empty" style="display:none">
       <div class="empty-icon">🔍</div>
@@ -1455,6 +1464,15 @@
 
 
   <div id="tab-plan" class="tab-content">
+    <div class="toolbar">
+      <input class="search-input" id="searchInput" placeholder="🔍 Search meals..." oninput="renderPlan()"/>
+      <div class="filter-btns">
+        <button class="flt-btn active" onclick="setFilter('all',this)">All</button>
+        <button class="flt-btn" onclick="setFilter('breakfast',this)">Breakfast</button>
+        <button class="flt-btn" onclick="setFilter('lunch',this)">Lunch</button>
+        <button class="flt-btn" onclick="setFilter('dinner',this)">Dinner</button>
+      </div>
+    </div>
     <div class="days-grid" id="daysGrid"></div>
     <div id="emptyMsg" class="empty" style="display:none">
       <div class="empty-icon">🔍</div>
