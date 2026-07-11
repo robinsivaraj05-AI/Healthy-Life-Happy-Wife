@@ -3361,11 +3361,12 @@ function renderStats(){
   const all=state.mealPlan.flatMap(d=>[d.breakfast,d.lunch,d.dinner]).filter(Boolean);
   const veg=all.filter(m=>m.type==='veg').length;
   const nv=all.length-veg;
-  const total=all.reduce((s,m)=>s+m.pricePerServing*getEffectivePeople(),0);
-  const avg=Math.round(total/days);
+  // Use same grocery-based total as the Grocery tab so both numbers always match
+  const grocTotal=buildGroceryList().reduce(function(s,g){return s+calcGroceryCost(g);},0);
+  const avg=Math.round(grocTotal/days);
   document.getElementById('statsGrid').innerHTML=[
     ['🍽️',all.length,'Total Meals'],['🥦',veg,'Veg'],['🍗',nv,'Non-Veg'],
-    ['💰','₹'+total.toLocaleString(),'Monthly Budget'],['📊','₹'+avg,'Daily Avg']
+    ['💰','₹'+Math.round(grocTotal).toLocaleString(),'Monthly Budget'],['📊','₹'+avg,'Daily Avg']
   ].map(([icon,val,label])=>`<div class="stat-card"><div class="stat-icon">${icon}</div><div class="stat-val">${val}</div><div class="stat-label">${label}</div></div>`).join('');
 }
 
@@ -3446,10 +3447,10 @@ function toggleDay(day){
 }
 
 function regeneratePlan(){
-  if(!requireAdmin()) return;
   state.mealPlan=generateMealPlan();
   state.expandedDays=new Set();
   renderStats();renderPlan();renderGrocery();
+  saveUserStateNow();
 }
 
 // ═══════════════════════════════════════════
@@ -3764,22 +3765,21 @@ function downloadCSV(){
 // PREFERENCES
 // ═══════════════════════════════════════════
 function changeHousehold(cat, delta){
-  if(!requireAdmin()) return;
   state.household[cat] = Math.max(0, (state.household[cat]||0) + delta);
   document.getElementById('hh-val-'+cat).textContent = state.household[cat];
   var total = getTotalPeople();
   document.getElementById('hh-total').textContent = 'Total: '+total+' people ('+getEffectivePeople()+' serving units)';
   document.getElementById('hdr-sub').textContent = getDaysInMonth(state.selectedMonth,state.selectedYear)+'-day meal plan · '+total+' people';
   renderStats(); renderGrocery();
+  saveUserStateNow();
 }
 function setDietMode(mode){
-  if(!requireAdmin()) return;
   state.dietMode = mode;
   document.querySelectorAll('.diet-btn').forEach(function(b){ b.classList.remove('active'); });
   document.getElementById('diet-'+mode).classList.add('active');
+  saveUserStateNow();
 }
 function updateSpice(v){
-  if(!requireAdmin()) return;
   state.spiceLevel=+v;
   const labels=['None','Mild','Medium','Hot','Very Hot'];
   const colors=['#ccc','#F9A825','#E65100','#E65100','#B71C1C'];
@@ -3787,6 +3787,7 @@ function updateSpice(v){
   b.textContent='Level '+v+' — '+labels[v];
   b.style.background=colors[v]+'22';
   b.style.color=colors[v];
+  saveUserStateNow();
 }
 
 // ═══════════════════════════════════════════
