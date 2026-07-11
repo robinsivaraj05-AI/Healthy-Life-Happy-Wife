@@ -1097,8 +1097,10 @@
 
     </div>
     <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-      <button class="btn-primary" onclick="regeneratePlan()">&#10024; Generate New Plan with These Preferences</button>
-      <p style="font-size:12px;color:var(--muted)">This will regenerate the plan using your current preferences.</p>
+      <button class="btn-primary" onclick="savePreferenceSettings()" style="background:linear-gradient(135deg,#2E7D32,#43A047);padding:12px 28px;font-size:14px">
+        &#10003; Save Settings
+      </button>
+      <p style="font-size:12px;color:var(--muted)">Your diet, spice and household settings will be saved to your profile.</p>
     </div>
   </div>
 
@@ -1633,8 +1635,10 @@
 
     </div>
     <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-      <button class="btn-primary" onclick="regeneratePlan()">&#10024; Generate New Plan with These Preferences</button>
-      <p style="font-size:12px;color:var(--muted)">This will regenerate the plan using your current preferences.</p>
+      <button class="btn-primary" onclick="savePreferenceSettings()" style="background:linear-gradient(135deg,#2E7D32,#43A047);padding:12px 28px;font-size:14px">
+        &#10003; Save Settings
+      </button>
+      <p style="font-size:12px;color:var(--muted)">Your diet, spice and household settings will be saved to your profile.</p>
     </div>
   </div>
 
@@ -3771,13 +3775,16 @@ function changeHousehold(cat, delta){
   document.getElementById('hh-total').textContent = 'Total: '+total+' people ('+getEffectivePeople()+' serving units)';
   document.getElementById('hdr-sub').textContent = getDaysInMonth(state.selectedMonth,state.selectedYear)+'-day meal plan · '+total+' people';
   renderStats(); renderGrocery();
-  saveUserStateNow();
 }
+function savePreferenceSettings(){
+  saveUserStateNow();
+  showToast('✓ Preferences saved! Diet, spice & household settings updated.');
+}
+
 function setDietMode(mode){
   state.dietMode = mode;
   document.querySelectorAll('.diet-btn').forEach(function(b){ b.classList.remove('active'); });
   document.getElementById('diet-'+mode).classList.add('active');
-  saveUserStateNow();
 }
 function updateSpice(v){
   state.spiceLevel=+v;
@@ -3787,7 +3794,6 @@ function updateSpice(v){
   b.textContent='Level '+v+' — '+labels[v];
   b.style.background=colors[v]+'22';
   b.style.color=colors[v];
-  saveUserStateNow();
 }
 
 // ═══════════════════════════════════════════
