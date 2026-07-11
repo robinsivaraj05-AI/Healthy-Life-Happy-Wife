@@ -3516,10 +3516,11 @@ function openRecipe(id,category){
     [...FOOD_DB.breakfast,...FOOD_DB.lunch,...FOOD_DB.dinner].find(m=>m.id===id);
   if(!meal)return;
   currentRecipeMeal=meal;
-  const scaled=scaleIng(meal.ingredients,meal.baseServing,state.people);
+  const _ppl=getTotalPeople();
+  const scaled=scaleIng(meal.ingredients,meal.baseServing,getEffectivePeople());
   document.getElementById('rm-title').textContent=meal.name;
   document.getElementById('rm-tamil').textContent=getRecipeMTName(meal);
-  document.getElementById('rm-chips').innerHTML=[`⏱ ${meal.time} min`,`👥 For ${state.people} ${state.people===1?'person':'people'}`,'Rs '+Math.round(meal.pricePerServing*getEffectivePeople())+' total'].map(c=>`<span class="modal-chip">${c}</span>`).join('');
+  document.getElementById('rm-chips').innerHTML=[`⏱ ${meal.time} min`,`👥 For ${_ppl} ${_ppl===1?'person':'people'}`,'Rs '+Math.round(meal.pricePerServing*getEffectivePeople())+' total'].map(c=>`<span class="modal-chip">${c}</span>`).join('');
   document.getElementById('rm-ingredients').innerHTML=scaled.map(i=>`<div class="ing-row"><span class="ing-name">${i.item}</span><span class="ing-qty">${i.qty}${i.unit?' '+i.unit:''}</span></div>`).join('');
   document.getElementById('rm-steps').innerHTML=meal.steps.map(s=>`<li>${s}</li>`).join('');
   document.getElementById('recipeModal').classList.add('open');
@@ -3789,7 +3790,7 @@ function downloadCSV(){
   var rows=[
     ['Jeevamithran Monthly Planning'],
     ['Monthly Grocery Budget - '+monthLabel],
-    ['Household Size: '+state.people+' '+(state.people===1?'person':'people')],
+    ['Household Size: '+getTotalPeople()+' '+(getTotalPeople()===1?'person':'people')],
     ['Pricing Mode: '+(state.priceMode==='auto'?'Auto (Market Rates)':'Manual')],
     [],
     ['BUDGET SUMMARY'],
