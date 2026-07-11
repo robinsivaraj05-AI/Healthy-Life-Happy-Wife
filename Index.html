@@ -3928,12 +3928,9 @@ function toggleFavouriteFromDetail(){
 }
 function updateRdpFavBtn(id){
   var isFav = !!state.favourites[id];
-  var icon  = document.getElementById('rdp-fav-icon');
-  var label = document.getElementById('rdp-fav-label');
-  var btn   = document.getElementById('rdp-fav-btn');
-  if(icon)  icon.textContent  = isFav ? '\u2764' : '\u2728';
-  if(label) label.textContent = isFav ? 'Remove from Favourites' : 'Add to Favourites';
-  if(btn)   btn.classList.toggle('rdp-fav-active', isFav);
+  document.querySelectorAll('[id="rdp-fav-icon"]').forEach(function(el){ el.textContent = isFav ? '\u2764' : '\u2728'; });
+  document.querySelectorAll('[id="rdp-fav-label"]').forEach(function(el){ el.textContent = isFav ? 'Remove from Favourites' : 'Add to Favourites'; });
+  document.querySelectorAll('[id="rdp-fav-btn"]').forEach(function(el){ el.classList.toggle('rdp-fav-active', isFav); });
 }
 
 // ── Favourites summary bar ───────────────────────────────────
@@ -4135,11 +4132,14 @@ function openRecipeDetail(id){
   });
   var inPlan = !!inPlanIds[id];
 
-  document.getElementById('rdp-title').textContent = meal.name;
-  document.getElementById('rdp-tamil').textContent = getRecipeMTName(meal);
-  document.getElementById('rdp-scale-note').textContent = 'Scaled for '+getTotalPeople()+' people ('+eff+' serving units)';
+  // Helper: set innerHTML/textContent on ALL duplicate-ID elements (desktop + mobile panels)
+  function rdpSet(id, prop, val){ document.querySelectorAll('[id="'+id+'"]').forEach(function(el){ el[prop]=val; }); }
 
-  document.getElementById('rdp-chips').innerHTML =
+  rdpSet('rdp-title','textContent',meal.name);
+  rdpSet('rdp-tamil','textContent',getRecipeMTName(meal));
+  rdpSet('rdp-scale-note','textContent','Scaled for '+getTotalPeople()+' people ('+eff+' serving units)');
+
+  var chipsHTML =
     '<span class="modal-chip">&#9201; '+meal.time+' min</span>'+
     '<span class="modal-chip">'+(isVeg?'&#129382; Veg':'&#127831; Non-veg')+'</span>'+
     '<span class="modal-chip">&#8377;'+Math.round(meal.pricePerServing*eff)+' total</span>'+
@@ -4147,33 +4147,26 @@ function openRecipeDetail(id){
     (inPlan?'<span class="modal-chip" style="background:rgba(21,101,192,.15);color:#1565C0">&#128197; In Plan</span>':'')+
     '<span class="modal-chip" style="background:rgba(233,30,99,.12);color:#E91E63;cursor:pointer" onclick="toggleFavouriteFromDetail()">'+
       (isFav?'&#10084; Favourited':'&#10040; Favourite')+'</span>';
+  rdpSet('rdp-chips','innerHTML',chipsHTML);
 
-  // Ingredients tab
-  var ingDiv = document.getElementById('rdp-ingredients');
-  ingDiv.innerHTML = '';
-  scaled.forEach(function(ing){
-    var row = document.createElement('div');
-    row.className = 'rdp-ing-row';
-    row.innerHTML = '<span>'+ing.item+'</span><span style="font-weight:700;color:var(--primary)">'+ing.qty+(ing.unit?' '+ing.unit:'')+'</span>';
-    ingDiv.appendChild(row);
-  });
+  // Ingredients tab — update all panels
+  var ingHTML = scaled.map(function(ing){
+    return '<div class="rdp-ing-row"><span>'+ing.item+'</span><span style="font-weight:700;color:var(--primary)">'+ing.qty+(ing.unit?' '+ing.unit:'')+'</span></div>';
+  }).join('');
+  rdpSet('rdp-ingredients','innerHTML',ingHTML);
 
-  // Preparation tab
-  var stepsList = document.getElementById('rdp-steps');
-  stepsList.innerHTML = '';
-  meal.steps.forEach(function(step, i){
-    var li = document.createElement('li');
-    li.className = 'rdp-step-item';
-    li.innerHTML = '<span class="step-num">'+(i+1)+'</span><span>'+step+'</span>';
-    stepsList.appendChild(li);
-  });
+  // Preparation tab — update all panels
+  var stepsHTML = meal.steps.map(function(step,i){
+    return '<li class="rdp-step-item"><span class="step-num">'+(i+1)+'</span><span>'+step+'</span></li>';
+  }).join('');
+  rdpSet('rdp-steps','innerHTML',stepsHTML);
 
   // Details tab
   var spiceLabels = ['None','Mild','Medium','Hot','Very Hot'];
-  document.getElementById('rdp-details').innerHTML =
+  detailsHTML =
     '<div class="rdp-detail-grid">'+
       '<div class="rdp-detail-item"><div class="rdi-label">Cook Time</div><div class="rdi-val">'+meal.time+' min</div></div>'+
-      '<div class="rdp-detail-item"><div class="rdi-label">Spice Level</div><div class="rdi-val">'+spiceLabels[meal.spice]||'Medium'+'</div></div>'+
+      '<div class="rdp-detail-item"><div class="rdi-label">Spice Level</div><div class="rdi-val">'+(spiceLabels[meal.spice]||'Medium')+'</div></div>'+
       '<div class="rdp-detail-item"><div class="rdi-label">Diet Type</div><div class="rdi-val">'+(isVeg?'Vegetarian':'Non-Vegetarian')+'</div></div>'+
       '<div class="rdp-detail-item"><div class="rdi-label">Category</div><div class="rdi-val">'+catLabel.charAt(0).toUpperCase()+catLabel.slice(1)+'</div></div>'+
       '<div class="rdp-detail-item"><div class="rdi-label">Cost / Serve</div><div class="rdi-val">&#8377;'+meal.pricePerServing+'</div></div>'+
@@ -4184,10 +4177,10 @@ function openRecipeDetail(id){
     '<div style="margin-top:14px;padding:12px;background:#FFF8E1;border-radius:8px;font-size:12px;color:#795548;line-height:1.6">'+
       '<strong>Note:</strong> Meals you favourite always appear in your monthly plan. Others rotate as variety options.'+
     '</div>';
+  rdpSet('rdp-details','innerHTML',detailsHTML);
 
-  // Show panel
-  var panel = document.getElementById('recipeDetailPanel');
-  panel.style.display = 'flex';
+  // Show ALL panels (desktop + mobile)
+  document.querySelectorAll('[id="recipeDetailPanel"]').forEach(function(p){ p.style.display='flex'; });
 
   // Switch to ingredients tab by default
   switchRdpTab('ingredients', document.getElementById('rdptab-ingredients'));
@@ -4202,8 +4195,7 @@ function openRecipeDetail(id){
 }
 
 function closeRecipeDetail(){
-  var panel = document.getElementById('recipeDetailPanel');
-  if(panel) panel.style.display = 'none';
+  document.querySelectorAll('[id="recipeDetailPanel"]').forEach(function(p){ p.style.display='none'; });
   state.activeRecipeId = null;
   document.querySelectorAll('.recipe-card').forEach(function(c){ c.classList.remove('recipe-active'); });
 }
@@ -4212,10 +4204,12 @@ function closeRecipeDetail(){
 function switchRdpTab(tab, btn){
   state.activeRdpTab = tab;
   ['ingredients','preparation','nutrition'].forEach(function(t){
-    var pane = document.getElementById('rdp-pane-'+t);
-    var tabBtn = document.getElementById('rdptab-'+t);
-    if(pane)   pane.style.display   = t===tab ? 'block' : 'none';
-    if(tabBtn) tabBtn.classList.toggle('active', t===tab);
+    document.querySelectorAll('[id="rdp-pane-'+t+'"]').forEach(function(pane){
+      pane.style.display = t===tab ? 'block' : 'none';
+    });
+    document.querySelectorAll('[id="rdptab-'+t+'"]').forEach(function(tabBtn){
+      tabBtn.classList.toggle('active', t===tab);
+    });
   });
 }
 
