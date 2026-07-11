@@ -3089,8 +3089,9 @@ function renderMyRequests(){
       var amt=q.quotationAmt?'&#8377; '+Number(q.quotationAmt).toLocaleString('en-IN'):'';
       actionHTML='<div style="margin-top:12px;padding:12px 14px;background:#F3E5F5;border-radius:9px;border:1px solid #CE93D8">'
         +'<div style="font-size:13px;font-weight:700;color:#6A1B9A;margin-bottom:4px">&#128203; Quotation Received: <span style="font-size:16px">'+amt+'</span></div>'
-        +(q.quotationDetails?'<div style="font-size:12px;color:#555;margin-bottom:10px">'+q.quotationDetails+'</div>':'')
-        +'<div style="display:flex;gap:10px">'
+        +(q.quotationDetails?'<div style="font-size:12px;color:#555;margin-bottom:8px">'+q.quotationDetails+'</div>':'')
+        +(q.quotationFile?'<div style="margin-bottom:10px"><a href="'+q.quotationFile+'" download="'+(q.quotationFileName||'quotation')+'" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:#E3F2FD;color:#1565C0;border:1.5px solid #90CAF9;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none">&#128206; Download Quotation File ('+( q.quotationFileName||'file')+')</a></div>':'')
+        +'<div style="display:flex;gap:10px;flex-wrap:wrap">'
         +'<button onclick="userApproveQuotation(\''+q.id+'\')" style="padding:9px 20px;background:linear-gradient(135deg,#2E7D32,#43A047);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">&#10003; Approve &amp; Pay</button>'
         +'<button onclick="userRejectQuotation(\''+q.id+'\')" style="padding:9px 20px;background:#FBE9E7;color:#C62828;border:1.5px solid #FFCDD2;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">&#10007; Reject</button>'
         +'</div></div>';
@@ -4609,7 +4610,13 @@ function showAdminPanel() {
               '<input id="qAmt_'+q.id+'" type="number" placeholder="e.g. 4850" style="padding:8px 10px;border-radius:7px;border:1.5px solid #A5D6A7;font-size:13px;outline:none;width:130px"/></div>'+
               '<div style="flex:1"><label style="font-size:11px;font-weight:600;color:#555;display:block;margin-bottom:3px">Notes / Details</label>'+
               '<input id="qDetails_'+q.id+'" type="text" placeholder="Optional delivery info, terms..." style="padding:8px 10px;border-radius:7px;border:1.5px solid #A5D6A7;font-size:13px;outline:none;width:100%;box-sizing:border-box"/></div>'+
-              '<button onclick="adminEnterQuotation(\''+q.id+'\')" style="padding:9px 16px;background:linear-gradient(135deg,#6A1B9A,#8E24AA);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">&#128203; Submit Quotation</button>'+
+            '</div>'+
+            '<div style="margin-top:8px">'+
+              '<label style="font-size:11px;font-weight:600;color:#555;display:block;margin-bottom:3px">&#128206; Attach Shop Quotation File (PDF / Image)</label>'+
+              '<input id="qFile_'+q.id+'" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" style="font-size:12px;padding:6px;border:1.5px solid #A5D6A7;border-radius:7px;background:#fff;width:100%;box-sizing:border-box"/>'+
+            '</div>'+
+            '<div style="margin-top:10px">'+
+              '<button onclick="adminEnterQuotation(\''+q.id+'\')" style="padding:9px 16px;background:linear-gradient(135deg,#6A1B9A,#8E24AA);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">&#128203; Submit Quotation to User</button>'+
             '</div></div>';
         } else if(q.status==='user_approved'){
           actionBtns='<div style="display:flex;gap:8px;margin-top:10px">'+
@@ -4622,6 +4629,7 @@ function showAdminPanel() {
               '<div style="font-size:15px;font-weight:800;color:#5a3e36">'+q.monthLabel+' — <span style="color:#C8604A">'+q.name+'</span> <span style="font-size:12px;color:#8B5E52">('+q.username+')</span></div>'+
               '<div style="font-size:12px;color:#8B5E52;margin-top:2px">Requested: '+rd+' · Items: '+q.groceryList.length+'</div>'+
               (q.quotationAmt?'<div style="font-size:13px;font-weight:700;color:#6A1B9A;margin-top:3px">Quotation: &#8377; '+Number(q.quotationAmt).toLocaleString('en-IN')+(q.quotationDetails?' — '+q.quotationDetails:'')+'</div>':'')+
+              (q.quotationFile?'<a href="'+q.quotationFile+'" download="'+(q.quotationFileName||'quotation')+'" style="display:inline-flex;align-items:center;gap:5px;margin-top:4px;padding:4px 10px;background:#E3F2FD;color:#1565C0;border:1px solid #90CAF9;border-radius:6px;font-size:11px;font-weight:700;text-decoration:none">&#128206; '+( q.quotationFileName||'Quotation File')+'</a>':'')+
             '</div>'+
             '<div style="padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;background:'+st.bg+';color:'+st.c+'">'+st.lbl+'</div>'+
           '</div>'+
@@ -4860,19 +4868,34 @@ function adminApproveAndSendToShop(qId){
 function adminEnterQuotation(qId){
   var amtEl=document.getElementById('qAmt_'+qId);
   var detailsEl=document.getElementById('qDetails_'+qId);
+  var fileEl=document.getElementById('qFile_'+qId);
   var amt=(amtEl?amtEl.value:'').toString().trim();
   var details=(detailsEl?detailsEl.value:'').trim();
   if(!amt||isNaN(parseFloat(amt))){ showToast('Please enter a valid quotation amount.'); return; }
-  var allQ=loadAllQuotations();
-  var q=allQ.find(function(x){return x.id===qId;});
-  if(!q) return;
-  q.status='quotation_received';
-  q.quotationAmt=parseFloat(amt);
-  q.quotationDetails=details;
-  q.quotationReceivedAt=new Date().toISOString();
-  saveAllQuotations(allQ);
-  showToast('&#10003; Quotation entered. User can now review and approve.');
-  showAdminPanel(); adminSwitchTab('quotations');
+
+  function doSave(fileData, fileName){
+    var allQ=loadAllQuotations();
+    var q=allQ.find(function(x){return x.id===qId;});
+    if(!q) return;
+    q.status='quotation_received';
+    q.quotationAmt=parseFloat(amt);
+    q.quotationDetails=details;
+    q.quotationReceivedAt=new Date().toISOString();
+    if(fileData){ q.quotationFile=fileData; q.quotationFileName=fileName; }
+    saveAllQuotations(allQ);
+    showToast('&#10003; Quotation'+(fileData?' with file':'')+' sent to user for review.');
+    showAdminPanel(); adminSwitchTab('quotations');
+  }
+
+  if(fileEl && fileEl.files && fileEl.files[0]){
+    var file=fileEl.files[0];
+    if(file.size > 5*1024*1024){ showToast('File too large. Please attach a file under 5 MB.'); return; }
+    var reader=new FileReader();
+    reader.onload=function(e){ doSave(e.target.result, file.name); };
+    reader.readAsDataURL(file);
+  } else {
+    doSave(null, null);
+  }
 }
 
 function adminMarkComplete(qId){
