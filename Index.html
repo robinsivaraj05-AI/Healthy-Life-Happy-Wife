@@ -5444,49 +5444,6 @@ switchTab = function(tab, btn) {
 
 </script>
 
-<!-- ═══════════════ LOGIN / REGISTER MODAL ═══════════════ -->
-<div id="authModal" class="auth-overlay">
-  <div class="auth-box">
-    <!-- Brand -->
-    <div class="auth-brand">
-      <div style="font-size:40px">🍛</div>
-      <div class="auth-brand-name">Jeevamithran</div>
-      <div class="auth-brand-sub">Monthly Planning</div>
-    </div>
-
-    <!-- Tab switcher -->
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="loginTabBtn" onclick="switchAuthTab('login')">Login</button>
-      <button class="auth-tab" id="registerTabBtn" onclick="switchAuthTab('register')">Register</button>
-    </div>
-
-    <!-- LOGIN FORM -->
-    <div id="loginPane" class="auth-pane">
-      <div id="loginError" class="auth-error" style="display:none"></div>
-      <label class="auth-label">Username</label>
-      <input class="auth-input" id="loginUser" type="text" placeholder="Enter username" autocomplete="username"/>
-      <label class="auth-label">Password</label>
-      <input class="auth-input" id="loginPass" type="password" placeholder="Enter password" autocomplete="current-password"/>
-      <button class="auth-submit" onclick="doLogin()">Login →</button>
-      <div class="auth-hint">Demo: use any username &amp; password to register first</div>
-    </div>
-
-    <!-- REGISTER FORM -->
-    <div id="registerPane" class="auth-pane" style="display:none">
-      <div id="registerError" class="auth-error" style="display:none"></div>
-      <label class="auth-label">Full Name</label>
-      <input class="auth-input" id="regName" type="text" placeholder="Your name"/>
-      <label class="auth-label">Username</label>
-      <input class="auth-input" id="regUser" type="text" placeholder="Choose username"/>
-      <label class="auth-label">Password</label>
-      <input class="auth-input" id="regPass" type="password" placeholder="Choose password (min 4 chars)"/>
-      <label class="auth-label">Confirm Password</label>
-      <input class="auth-input" id="regPass2" type="password" placeholder="Repeat password"/>
-      <button class="auth-submit" onclick="doRegister()">Create Account →</button>
-    </div>
-  </div>
-</div>
-
 <!-- ═══════════════ HISTORY TAB ═══════════════ -->
 </body>
 </html>
