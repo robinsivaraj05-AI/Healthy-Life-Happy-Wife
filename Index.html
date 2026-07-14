@@ -889,6 +889,7 @@
         <button class="nav-btn" onclick="switchTab('recipes',this)">📖 Recipes</button>
         <button class="nav-btn" onclick="switchTab('menu',this)">🍽️ Today's Menu</button>
         <button class="nav-btn" id="historyNavBtn" onclick="switchTab('history',this)" style="display:none">📊 Status</button>
+        <button class="nav-btn" onclick="switchTab('diet',this)">🥗 Diet Plan</button>
         <button class="nav-btn" onclick="switchTab('prefs',this)">⚙️ Preferences</button>
         <button class="nav-btn" id="profileNavBtn" onclick="switchTab('profile',this)">👤 My Profile</button>
       </nav>
@@ -1432,6 +1433,68 @@
       </div>
     </div>
 
+  </div>
+
+  <!-- ═══════════════════ DIET PLAN TAB ═══════════════════ -->
+  <div id="tab-diet" class="tab-content" style="display:none">
+    <div style="max-width:960px;margin:0 auto">
+      <div style="background:linear-gradient(135deg,#1B5E20,#2E7D32,#43A047);border-radius:14px;padding:20px 24px;margin-bottom:20px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <span style="font-size:40px">🥗</span>
+        <div style="flex:1">
+          <h2 style="margin:0 0 4px;font-size:20px;font-weight:800">Personalised Diet Plan</h2>
+          <p style="margin:0;font-size:12px;opacity:.85">Nutrition-based meals — fruits, nuts, protein &amp; protection. Pan-India. All body types.</p>
+        </div>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-bottom:16px">
+        <h3 style="margin:0 0 14px;color:#1B5E20;font-size:15px;font-weight:700">⚖️ Your Body Metrics</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end;flex-wrap:wrap">
+          <div><label style="font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:5px">Height (cm)</label>
+            <input id="dietHeight" type="number" placeholder="e.g. 168" min="100" max="250" style="width:100%;padding:11px 14px;border-radius:9px;border:1.5px solid #C8E6C9;font-size:14px;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#2E7D32'" onblur="this.style.borderColor='#C8E6C9'"/></div>
+          <div><label style="font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:5px">Weight (kg)</label>
+            <input id="dietWeight" type="number" placeholder="e.g. 72" min="20" max="300" style="width:100%;padding:11px 14px;border-radius:9px;border:1.5px solid #C8E6C9;font-size:14px;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#2E7D32'" onblur="this.style.borderColor='#C8E6C9'"/></div>
+          <div><label style="font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:5px">Goal</label>
+            <select id="dietGoal" style="width:100%;padding:11px 14px;border-radius:9px;border:1.5px solid #C8E6C9;font-size:13px;outline:none;background:#fff" onfocus="this.style.borderColor='#2E7D32'" onblur="this.style.borderColor='#C8E6C9'">
+              <option value="lose">Lose Weight</option><option value="maintain" selected>Maintain</option><option value="gain">Gain / Build Muscle</option>
+            </select></div>
+          <button onclick="calcBMIAndPlan()" style="padding:11px 22px;background:linear-gradient(135deg,#1B5E20,#43A047);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">🔍 Generate Plan</button>
+        </div>
+        <div id="bmiResult" style="display:none;margin-top:16px;padding:14px 18px;border-radius:10px;background:#F1F8E9;border:1.5px solid #AED581">
+          <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+            <div style="text-align:center"><div style="font-size:28px;font-weight:800;color:#1B5E20" id="bmiValue">--</div><div style="font-size:11px;color:#555;font-weight:600">BMI</div></div>
+            <div style="width:1px;background:#AED581;align-self:stretch"></div>
+            <div><div style="font-size:14px;font-weight:700;color:#1B5E20" id="bmiCategory">--</div><div style="font-size:12px;color:#555" id="bmiAdvice">--</div></div>
+            <div style="margin-left:auto;display:flex;gap:14px;flex-wrap:wrap">
+              <div style="text-align:center"><div style="font-size:16px;font-weight:800;color:#E65100" id="bmiCalories">--</div><div style="font-size:10px;color:#777">kcal/day</div></div>
+              <div style="text-align:center"><div style="font-size:16px;font-weight:800;color:#1565C0" id="bmiProtein">--</div><div style="font-size:10px;color:#777">g protein</div></div>
+              <div style="text-align:center"><div style="font-size:16px;font-weight:800;color:#6A1B9A" id="bmiCarbs">--</div><div style="font-size:10px;color:#777">g carbs</div></div>
+              <div style="text-align:center"><div style="font-size:16px;font-weight:800;color:#2E7D32" id="bmiFat">--</div><div style="font-size:10px;color:#777">g fat</div></div>
+            </div>
+          </div>
+          <div style="margin-top:12px">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:#777;margin-bottom:3px"><span>Underweight &lt;18.5</span><span>Normal 18.5–25</span><span>Overweight 25–30</span><span>Obese ≥30</span></div>
+            <div style="height:8px;border-radius:4px;background:linear-gradient(to right,#42A5F5,#66BB6A,#FFA726,#EF5350);position:relative">
+              <div id="bmiMarker" style="position:absolute;top:-3px;width:14px;height:14px;border-radius:50%;background:#1B5E20;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3);transform:translateX(-50%);left:0%;transition:.4s"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="dietPlanOutput" style="display:none">
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap" id="dietSlotTabs">
+          <button class="diet-slot-btn" id="dslot-breakfast" onclick="showDietSlot('breakfast',this)" style="padding:8px 18px;border-radius:20px;border:none;cursor:pointer;font-size:13px;font-weight:600;background:var(--primary);color:#fff">☀️ Breakfast</button>
+          <button class="diet-slot-btn" id="dslot-lunch" onclick="showDietSlot('lunch',this)" style="padding:8px 18px;border-radius:20px;border:1.5px solid #C8E6C9;cursor:pointer;font-size:13px;font-weight:600;background:#fff;color:#2E7D32">🌿 Lunch</button>
+          <button class="diet-slot-btn" id="dslot-dinner" onclick="showDietSlot('dinner',this)" style="padding:8px 18px;border-radius:20px;border:1.5px solid #C8E6C9;cursor:pointer;font-size:13px;font-weight:600;background:#fff;color:#2E7D32">🌙 Dinner</button>
+          <button class="diet-slot-btn" id="dslot-snacks" onclick="showDietSlot('snacks',this)" style="padding:8px 18px;border-radius:20px;border:1.5px solid #C8E6C9;cursor:pointer;font-size:13px;font-weight:600;background:#fff;color:#2E7D32">🥜 Snacks &amp; Fruits</button>
+        </div>
+        <div id="dietMealGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px"></div>
+      </div>
+      <div style="background:linear-gradient(135deg,#E8F5E9,#F1F8E9);border-radius:14px;padding:18px 20px;margin-top:16px;border:1.5px solid #A5D6A7">
+        <div style="font-size:14px;font-weight:700;color:#1B5E20;margin-bottom:10px">💡 Dolu Baddy's Diet Tips</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="font-size:12px;color:#2E7D32;line-height:1.7">✅ Drink 8–10 glasses of water daily<br>✅ Eat every 3–4 hours — never skip meals<br>✅ Include a protein source in every meal<br>✅ Have fruits before 4 PM for best absorption</div>
+          <div style="font-size:12px;color:#2E7D32;line-height:1.7">✅ A handful of mixed nuts daily boosts immunity<br>✅ Sleep 7–8 hours — body repairs while you sleep<br>✅ Walk 30 min after meals for better digestion<br>✅ Replace white rice/bread with millets &amp; brown rice</div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- HISTORY TAB -->
@@ -3349,7 +3412,7 @@ function switchTab(tab,btn){
   state.activeTab=tab;
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   if(btn) btn.classList.add('active');
-  ['plan','grocery','recipes','menu','prefs','profile','history'].forEach(t=>{
+  ['plan','grocery','recipes','menu','prefs','profile','history','diet'].forEach(t=>{
     var el=document.getElementById('tab-'+t); if(el) el.style.display=t===tab?'block':'none';
   });
   if(tab==='grocery') renderGrocery();
@@ -3358,6 +3421,7 @@ function switchTab(tab,btn){
   if(tab==='prefs') renderStateGrid();
   if(tab==='profile') renderProfile();
   if(tab==='history'){ renderHistory(); renderMyRequests(); }
+  if(tab==='diet') renderDietTab();
   closeDatePicker();
 }
 
@@ -5511,6 +5575,189 @@ switchTab = function(tab, btn) {
   _origSwitchTab(tab, btn);
   if(tab === 'history') renderHistory();
 };
+
+// ═══════════════════════════════════════════════════════
+// DIET PLAN DATABASE  (Pan-India, Nutrition-first)
+// ═══════════════════════════════════════════════════════
+var DIET_DB = {
+  breakfast:[
+    {id:'db01',name:'Overnight Oats with Mixed Berries',cal:310,prot:12,carb:50,fat:7,fiber:7,type:'veg',tags:['High Fiber','Antioxidant'],bmi:['normal','overweight','obese'],time:10,price:65,ingredients:'Rolled oats 60g · Mixed berries 80g · Low-fat milk 150ml · Chia seeds 10g · Honey 5g',steps:'Soak oats in milk overnight. Top with berries, chia seeds and honey in the morning. Ready to eat cold.'},
+    {id:'db02',name:'Moong Dal Cheela (Protein Pancake)',cal:280,prot:18,carb:35,fat:6,fiber:5,type:'veg',tags:['High Protein','Low Fat'],bmi:['all'],time:20,price:45,ingredients:'Moong dal 80g · Onion 40g · Green chilli 5g · Ginger 5g · Coriander 10g · Oil 5ml',steps:'Soak moong dal 4 hrs. Grind with spices. Pour thin pancakes on hot tawa. Cook both sides with minimal oil. Serve with mint chutney.'},
+    {id:'db03',name:'Egg White Veggie Omelette',cal:160,prot:22,carb:6,fat:4,fiber:2,type:'non-veg',tags:['High Protein','Low Cal'],bmi:['overweight','obese'],time:10,price:40,ingredients:'Egg whites 4 nos · Spinach 40g · Capsicum 30g · Tomato 30g · Onion 20g · Pepper · Salt · Oil 3ml',steps:'Beat egg whites. Sauté vegetables lightly. Pour egg white over vegetables. Fold and serve hot.'},
+    {id:'db04',name:'Ragi Malt with Banana',cal:290,prot:8,carb:52,fat:5,fiber:6,type:'veg',tags:['High Fiber','Energy Boost','Calcium'],bmi:['underweight','normal'],time:10,price:30,ingredients:'Ragi flour 50g · Low-fat milk 250ml · Banana ½ · Jaggery 10g',steps:'Mix ragi flour in cold milk. Heat while stirring until thick. Add jaggery. Serve warm with sliced banana.'},
+    {id:'db05',name:'Sprouts Salad with Lemon',cal:190,prot:14,carb:28,fat:3,fiber:8,type:'veg',tags:['High Protein','High Fiber','Immunity'],bmi:['all'],time:5,price:35,ingredients:'Mixed sprouts 150g · Tomato 50g · Onion 30g · Cucumber 50g · Lemon juice 15ml · Chaat masala 2g · Coriander',steps:'Wash sprouts. Mix all vegetables. Add lemon juice and chaat masala. Toss well and serve immediately.'},
+    {id:'db06',name:'Quinoa Upma',cal:320,prot:14,carb:48,fat:8,fiber:5,type:'veg',tags:['Complete Protein','Gluten Free'],bmi:['normal','overweight'],time:20,price:70,ingredients:'Quinoa 80g · Mixed vegetables 100g · Mustard seeds · Curry leaves · Onion 50g · Oil 8ml · Salt',steps:'Wash quinoa. Temper mustard and curry leaves. Add vegetables, cook 2 min. Add quinoa and water 1:2. Cook covered 15 min.'},
+    {id:'db07',name:'Greek Yogurt Parfait with Nuts',cal:260,prot:16,carb:28,fat:10,fiber:3,type:'veg',tags:['Probiotic','High Protein','Calcium'],bmi:['normal','underweight'],time:5,price:80,ingredients:'Greek yogurt 150g · Almonds 10g · Walnuts 8g · Banana ½ · Honey 5g · Pomegranate seeds 20g',steps:'Layer yogurt in a glass. Add sliced banana. Top with nuts and pomegranate. Drizzle honey. Serve chilled.'},
+    {id:'db08',name:'Besan Cheela with Mint Chutney',cal:250,prot:14,carb:32,fat:7,fiber:4,type:'veg',tags:['High Protein','Iron Rich'],bmi:['all'],time:15,price:35,ingredients:'Besan (chickpea flour) 80g · Onion 40g · Tomato 30g · Green chilli · Turmeric · Oil 6ml · Salt',steps:'Mix besan with water to batter. Add vegetables and spices. Cook thin pancakes on tawa. Serve with mint chutney.'},
+    {id:'db09',name:'Poached Eggs on Whole Wheat Toast',cal:300,prot:20,carb:30,fat:10,fiber:4,type:'non-veg',tags:['High Protein','Balanced'],bmi:['normal','underweight'],time:10,price:50,ingredients:'Eggs 2 · Whole wheat bread 2 slices · Spinach 30g · Tomato 40g · Pepper · Salt',steps:'Poach eggs in simmering water 3-4 min. Toast bread. Layer with spinach and tomato. Top with poached eggs.'},
+    {id:'db10',name:'Banana Almond Smoothie',cal:280,prot:10,carb:45,fat:9,fiber:5,type:'veg',tags:['Energy','Potassium','Healthy Fats'],bmi:['underweight','normal'],time:5,price:55,ingredients:'Banana 1 · Almonds 15g · Low-fat milk 200ml · Dates 2 · Flaxseed 5g',steps:'Blend all ingredients until smooth. Serve immediately. Add ice if preferred.'},
+    {id:'db11',name:'Chia Seed Pudding',cal:240,prot:9,carb:32,fat:10,fiber:10,type:'veg',tags:['Omega-3','High Fiber','Antioxidant'],bmi:['overweight','obese'],time:5,price:60,ingredients:'Chia seeds 30g · Almond milk 200ml · Mixed berries 60g · Honey 5g',steps:'Mix chia seeds in milk. Refrigerate overnight. Top with berries and honey before serving.'},
+    {id:'db12',name:'Poha with Peanuts and Vegetables',cal:290,prot:10,carb:48,fat:8,fiber:4,type:'veg',tags:['Iron Rich','Energy'],bmi:['normal','underweight'],time:15,price:30,ingredients:'Flattened rice 80g · Peanuts 20g · Onion 50g · Green chilli · Mustard · Turmeric · Lemon juice · Oil 5ml',steps:'Wash poha, drain. Fry peanuts. Temper mustard, add vegetables. Add poha, lemon juice, mix well.'},
+  ],
+  lunch:[
+    {id:'dl01',name:'Grilled Chicken Salad',cal:310,prot:35,carb:15,fat:10,fiber:5,type:'non-veg',tags:['High Protein','Low Carb'],bmi:['overweight','obese'],time:25,price:120,ingredients:'Chicken breast 150g · Mixed greens 80g · Cherry tomatoes 50g · Cucumber 60g · Olive oil 8ml · Lemon · Pepper',steps:'Marinate chicken with lemon and pepper. Grill 6-7 min each side. Slice. Toss with salad. Drizzle olive oil.'},
+    {id:'dl02',name:'Brown Rice Dal Khichdi',cal:380,prot:16,carb:60,fat:8,fiber:7,type:'veg',tags:['Complete Protein','High Fiber'],bmi:['normal','underweight'],time:30,price:50,ingredients:'Brown rice 80g · Moong dal 40g · Mixed vegetables 100g · Turmeric · Cumin · Ghee 5g · Salt',steps:'Wash rice and dal. Pressure cook with vegetables, turmeric and cumin. Finish with small ghee. Serve hot.'},
+    {id:'dl03',name:'Chickpea Salad Bowl',cal:350,prot:18,carb:48,fat:9,fiber:12,type:'veg',tags:['High Fiber','High Protein','Iron'],bmi:['all'],time:10,price:55,ingredients:'Boiled chickpeas 150g · Onion 50g · Tomato 60g · Cucumber 60g · Coriander · Lemon · Olive oil 8ml · Chaat masala',steps:'Mix all ingredients. Season with lemon juice and chaat masala. Drizzle olive oil. Serve immediately.'},
+    {id:'dl04',name:'Grilled Fish with Steamed Vegetables',cal:290,prot:38,carb:12,fat:9,fiber:4,type:'non-veg',tags:['Omega-3','High Protein','Low Cal'],bmi:['overweight','obese'],time:20,price:150,ingredients:'Fish fillet 180g · Broccoli 80g · Carrot 60g · Beans 50g · Lemon · Turmeric · Pepper · Oil 5ml',steps:'Marinate fish with turmeric, pepper, lemon. Grill 4-5 min each side. Steam vegetables. Serve together.'},
+    {id:'dl05',name:'Quinoa Vegetable Bowl',cal:360,prot:14,carb:55,fat:9,fiber:8,type:'veg',tags:['Complete Protein','Gluten Free'],bmi:['normal','overweight'],time:25,price:80,ingredients:'Quinoa 80g · Roasted sweet potato 100g · Spinach 60g · Avocado ½ · Lemon · Olive oil 8ml · Seeds mix 10g',steps:'Cook quinoa. Roast sweet potato. Wilt spinach. Assemble bowl. Top with avocado slices, seeds, drizzle oil.'},
+    {id:'dl06',name:'Mixed Dal with Millet Roti',cal:400,prot:20,carb:62,fat:8,fiber:10,type:'veg',tags:['High Protein','High Fiber','Iron'],bmi:['normal','underweight'],time:30,price:45,ingredients:'Mixed dal 100g · Bajra/jowar flour 80g · Onion 60g · Tomato 60g · Garlic · Cumin · Turmeric · Oil 8ml',steps:'Cook mixed dal with spices. Knead millet flour to dough. Roll and cook rotis. Serve dal with roti and salad.'},
+    {id:'dl07',name:'Paneer Tikka Salad',cal:320,prot:22,carb:18,fat:14,fiber:4,type:'veg',tags:['High Protein','Calcium','Probiotics'],bmi:['normal','underweight'],time:20,price:90,ingredients:'Paneer 100g · Capsicum 50g · Onion 40g · Yogurt 50g · Tandoori masala · Mixed greens 80g · Lemon',steps:'Marinate paneer in yogurt and spices. Grill or air-fry. Serve on mixed greens with lemon dressing.'},
+    {id:'dl08',name:'Egg Curry with Brown Rice',cal:420,prot:24,carb:52,fat:12,fiber:3,type:'non-veg',tags:['High Protein','Iron','B12'],bmi:['normal','underweight'],time:25,price:60,ingredients:'Eggs 2 · Brown rice 80g · Onion 80g · Tomato 80g · Coconut milk 50ml · Spices · Oil 8ml',steps:'Boil eggs. Make tomato-onion gravy with coconut milk. Add boiled eggs. Serve with brown rice.'},
+    {id:'dl09',name:'Tofu Stir-Fry with Vegetables',cal:260,prot:18,carb:20,fat:12,fiber:6,type:'veg',tags:['High Protein','Low Cal','Antioxidant'],bmi:['overweight','obese'],time:15,price:70,ingredients:'Tofu 150g · Broccoli 80g · Capsicum 60g · Carrot 50g · Ginger-garlic · Soy sauce 10ml · Sesame oil 5ml',steps:'Press and cube tofu, pan fry until golden. Stir-fry vegetables with ginger-garlic. Add tofu, soy sauce. Toss.'},
+    {id:'dl10',name:'Moong Dal Soup with Whole Wheat Bread',cal:280,prot:18,carb:40,fat:5,fiber:8,type:'veg',tags:['Detox','High Fiber','Light'],bmi:['overweight','obese'],time:20,price:40,ingredients:'Moong dal 80g · Spinach 50g · Tomato 50g · Garlic 10g · Cumin · Turmeric · Lemon · Whole wheat bread 2 slices',steps:'Cook dal with spices. Add spinach in last 5 min. Blend partially for thick soup. Finish with lemon. Serve with bread.'},
+    {id:'dl11',name:'Rajma Brown Rice Bowl',cal:450,prot:22,carb:68,fat:8,fiber:14,type:'veg',tags:['High Fiber','High Protein','Iron'],bmi:['underweight','normal'],time:35,price:50,ingredients:'Rajma 100g · Brown rice 80g · Onion 80g · Tomato 80g · Garlic · Spices · Oil 8ml · Coriander',steps:'Soak and pressure cook rajma. Make tomato-onion gravy. Add rajma and simmer 15 min. Serve with brown rice.'},
+    {id:'dl12',name:'Tuna Salad Wrap',cal:300,prot:32,carb:28,fat:8,fiber:4,type:'non-veg',tags:['Omega-3','High Protein','Low Cal'],bmi:['overweight','obese'],time:10,price:100,ingredients:'Canned tuna 120g · Whole wheat wrap · Lettuce · Tomato · Cucumber · Yogurt 30g · Lemon · Pepper',steps:'Mix tuna with yogurt, lemon, pepper. Layer on wrap with vegetables. Roll and serve immediately.'},
+  ],
+  dinner:[
+    {id:'dd01',name:'Grilled Salmon with Asparagus',cal:340,prot:38,carb:10,fat:16,fiber:4,type:'non-veg',tags:['Omega-3','High Protein','Vitamin D'],bmi:['all'],time:20,price:200,ingredients:'Salmon fillet 180g · Asparagus 100g · Lemon · Garlic · Olive oil 8ml · Pepper · Herbs',steps:'Season salmon with lemon, garlic, herbs. Grill 5 min each side. Roast asparagus with olive oil. Serve together.'},
+    {id:'dd02',name:'Palak Paneer with Millet Roti',cal:380,prot:20,carb:40,fat:16,fiber:8,type:'veg',tags:['Iron','Calcium','High Protein'],bmi:['normal','underweight'],time:25,price:80,ingredients:'Paneer 100g · Spinach 200g · Onion 60g · Tomato 50g · Cream 20ml · Spices · Oil 8ml · Jowar roti 2',steps:'Blanch and puree spinach. Cook onion-tomato masala. Add spinach puree and paneer. Finish with cream. Serve with millet roti.'},
+    {id:'dd03',name:'Chicken Vegetable Clear Soup',cal:180,prot:25,carb:10,fat:4,fiber:3,type:'non-veg',tags:['Low Cal','High Protein','Detox'],bmi:['overweight','obese'],time:20,price:80,ingredients:'Chicken 120g · Mixed vegetables 150g · Ginger 10g · Garlic 8g · Pepper · Salt · Lemon · Coriander',steps:'Boil chicken with ginger and garlic. Shred chicken. Add vegetables, cook 10 min. Season with pepper, lemon.'},
+    {id:'dd04',name:'Mixed Vegetable Soup',cal:150,prot:6,carb:22,fat:4,fiber:7,type:'veg',tags:['Low Cal','Detox','Immunity'],bmi:['overweight','obese'],time:15,price:40,ingredients:'Carrot 80g · Tomato 80g · Spinach 60g · Broccoli 60g · Garlic · Pepper · Salt · Olive oil 5ml',steps:'Sauté garlic in oil. Add all vegetables. Add 600ml water and simmer 15 min. Blend partially. Season and serve.'},
+    {id:'dd05',name:'Oats and Vegetable Khichdi',cal:320,prot:14,carb:48,fat:8,fiber:7,type:'veg',tags:['High Fiber','Light','Easy Digestion'],bmi:['overweight','obese'],time:20,price:40,ingredients:'Oats 60g · Moong dal 40g · Mixed vegetables 100g · Turmeric · Cumin · Ghee 5g · Salt',steps:'Heat ghee, add cumin. Add dal, cook 5 min. Add oats, vegetables and water. Cook until soft and thick. Serve hot.'},
+    {id:'dd06',name:'Baked Chicken with Roasted Vegetables',cal:350,prot:40,carb:20,fat:11,fiber:5,type:'non-veg',tags:['High Protein','Low Carb','Antioxidant'],bmi:['overweight','obese'],time:35,price:140,ingredients:'Chicken breast 180g · Sweet potato 80g · Broccoli 80g · Capsicum 60g · Olive oil 10ml · Herbs · Garlic',steps:'Marinate chicken with herbs, garlic, oil. Bake at 200°C 25 min. Roast vegetables alongside. Serve together.'},
+    {id:'dd07',name:'Dal Makhani (Low Fat Version)',cal:360,prot:18,carb:52,fat:10,fiber:12,type:'veg',tags:['High Fiber','High Protein','Iron'],bmi:['normal','underweight'],time:40,price:55,ingredients:'Black urad dal 80g · Rajma 20g · Tomato 80g · Onion 60g · Ginger-garlic · Low-fat cream 20ml · Spices · Oil 6ml',steps:'Soak and pressure cook dals. Make tomato-onion gravy. Simmer dals in gravy 20 min on low heat. Finish with cream.'},
+    {id:'dd08',name:'Egg and Spinach Bhurji with Roti',cal:300,prot:22,carb:28,fat:12,fiber:4,type:'non-veg',tags:['High Protein','Iron','B12'],bmi:['normal','underweight'],time:15,price:45,ingredients:'Eggs 2 · Spinach 80g · Onion 50g · Tomato 50g · Green chilli · Spices · Oil 6ml · Whole wheat roti 2',steps:'Scramble eggs with onion, tomato, spinach. Season with spices. Serve with whole wheat rotis.'},
+    {id:'dd09',name:'Lentil Soup (Masoor Dal)',cal:240,prot:16,carb:36,fat:5,fiber:9,type:'veg',tags:['High Fiber','Iron','Light'],bmi:['overweight','obese'],time:20,price:35,ingredients:'Red masoor dal 80g · Tomato 60g · Onion 40g · Garlic · Turmeric · Lemon · Coriander · Oil 5ml',steps:'Cook masoor dal with turmeric. Prepare tempering with garlic, tomato, onion. Add to dal. Finish with lemon.'},
+    {id:'dd10',name:'Stir-Fried Tofu and Broccoli',cal:220,prot:18,carb:14,fat:11,fiber:5,type:'veg',tags:['High Protein','Low Cal','Antioxidant'],bmi:['overweight','obese'],time:15,price:75,ingredients:'Tofu 150g · Broccoli 120g · Bell pepper 60g · Soy sauce 10ml · Ginger · Garlic · Sesame oil 5ml · Seeds',steps:'Pan-fry tofu until golden. Stir-fry broccoli and peppers with ginger-garlic. Add tofu, soy sauce, sesame oil.'},
+    {id:'dd11',name:'Millet Vegetable Porridge',cal:280,prot:9,carb:50,fat:5,fiber:6,type:'veg',tags:['Gluten Free','Easy Digestion','Minerals'],bmi:['all'],time:20,price:35,ingredients:'Bajra or foxtail millet 70g · Mixed vegetables 100g · Cumin · Pepper · Salt · Coriander · Ghee 3g',steps:'Cook millet with vegetables and water 1:3. Season with cumin, pepper, salt. Finish with ghee and coriander.'},
+    {id:'dd12',name:'Grilled Prawns with Salad',cal:240,prot:32,carb:8,fat:8,fiber:3,type:'non-veg',tags:['High Protein','Low Cal','Omega-3'],bmi:['overweight','obese'],time:15,price:160,ingredients:'Prawns 200g · Lettuce 80g · Cucumber 60g · Cherry tomato 50g · Lemon · Garlic · Olive oil 8ml · Pepper',steps:'Marinate prawns with garlic, lemon, pepper. Grill 2-3 min each side. Serve on salad with olive oil dressing.'},
+  ],
+  snacks:[
+    {id:'ds01',name:'Mixed Nut & Seed Trail Mix',cal:190,prot:6,carb:12,fat:14,fiber:3,type:'veg',tags:['Healthy Fats','Energy','Brain Food'],bmi:['all'],time:0,price:60,ingredients:'Almonds 15g · Walnuts 10g · Cashews 8g · Pumpkin seeds 8g · Sunflower seeds 5g · Dried cranberries 10g',steps:'Mix all together. Store in an airtight box. Consume a small handful as snack. Rich in Omega-3, protein, zinc.'},
+    {id:'ds02',name:'Fresh Fruit Bowl',cal:140,prot:2,carb:34,fat:1,fiber:5,type:'veg',tags:['Vitamins','Antioxidant','Hydration'],bmi:['all'],time:5,price:50,ingredients:'Watermelon 100g · Papaya 80g · Apple ½ · Pomegranate seeds 40g · Orange ½ · Mint leaves',steps:'Cut all fruits. Mix in a bowl. Squeeze a little lemon if desired. Consume between 11 AM – 4 PM for best results.'},
+    {id:'ds03',name:'Boiled Egg with Cucumber Sticks',cal:120,prot:12,carb:5,fat:6,fiber:1,type:'non-veg',tags:['High Protein','Low Cal','Filling'],bmi:['overweight','obese'],time:10,price:25,ingredients:'Eggs 1 boiled · Cucumber 100g · Pepper · Salt · Lemon juice',steps:'Boil egg, peel and halve. Cut cucumber into sticks. Season with pepper and lemon. Eat as mid-morning snack.'},
+    {id:'ds04',name:'Hummus with Carrot & Celery Sticks',cal:160,prot:7,carb:20,fat:7,fiber:5,type:'veg',tags:['High Fiber','Plant Protein','Gut Health'],bmi:['all'],time:5,price:50,ingredients:'Hummus 60g · Carrot 80g · Celery 60g · Cucumber 60g · Lemon · Paprika',steps:'Prepare or use readymade hummus. Cut vegetables into sticks. Dip and eat. Great post-workout snack.'},
+    {id:'ds05',name:'Banana with Peanut Butter',cal:210,prot:7,carb:35,fat:8,fiber:4,type:'veg',tags:['Energy','Potassium','Healthy Fats'],bmi:['underweight','normal'],time:2,price:35,ingredients:'Banana 1 medium · Natural peanut butter 15g',steps:'Slice banana. Spread or dip in peanut butter. Excellent pre-workout or morning snack. Natural sugars + protein combo.'},
+    {id:'ds06',name:'Sprouts Chaat',cal:160,prot:11,carb:24,fat:2,fiber:7,type:'veg',tags:['High Protein','High Fiber','Immunity'],bmi:['all'],time:5,price:30,ingredients:'Mixed sprouts 120g · Tomato 40g · Onion 30g · Lemon juice · Chaat masala · Coriander · Green chilli',steps:'Wash sprouts. Mix with chopped vegetables. Add lemon juice and chaat masala. Toss and serve fresh.'},
+    {id:'ds07',name:'Makhana (Fox Nuts) Roasted',cal:120,prot:4,carb:20,fat:3,fiber:1,type:'veg',tags:['Low Cal','Antioxidant','Magnesium'],bmi:['overweight','obese'],time:5,price:30,ingredients:'Makhana 30g · Ghee 2g · Rock salt · Pepper · Turmeric',steps:'Dry roast makhana in ghee 5 min. Season with salt, pepper, turmeric. Excellent low-calorie crunchy snack.'},
+    {id:'ds08',name:'Coconut Water with Lime',cal:50,prot:1,carb:12,fat:0,fiber:1,type:'veg',tags:['Hydration','Electrolytes','Detox'],bmi:['all'],time:1,price:30,ingredients:'Fresh coconut water 250ml · Lime juice 10ml · Pinch of salt',steps:'Pour fresh coconut water in glass. Add lime juice and pinch of salt. Drink post-workout or in the afternoon.'},
+    {id:'ds09',name:'Greek Yogurt with Flaxseeds',cal:170,prot:14,carb:12,fat:7,fiber:3,type:'veg',tags:['Probiotic','Omega-3','Calcium'],bmi:['all'],time:2,price:60,ingredients:'Greek yogurt 150g · Flaxseeds 10g · Honey 5g · Cinnamon pinch',steps:'Spoon yogurt into bowl. Sprinkle flaxseeds and cinnamon. Drizzle honey. Best consumed as afternoon snack.'},
+    {id:'ds10',name:'Dates and Almond Energy Balls',cal:180,prot:5,carb:28,fat:8,fiber:4,type:'veg',tags:['Natural Sugar','Energy','Iron'],bmi:['underweight','normal'],time:10,price:50,ingredients:'Dates 4 · Almonds 15g · Walnuts 10g · Desiccated coconut 10g · Cardamom',steps:'Blend dates and nuts together. Roll into balls. Coat in coconut. Refrigerate. Consume 1-2 as pre-workout snack.'},
+  ]
+};
+
+var _dietCurrentSlot = 'breakfast';
+var _dietCurrentBmi  = null;
+
+// ── BMI Calculator & Plan Generator ─────────────────────
+function calcBMIAndPlan(){
+  var h = parseFloat(document.getElementById('dietHeight').value);
+  var w = parseFloat(document.getElementById('dietWeight').value);
+  var goal = document.getElementById('dietGoal').value;
+  if(!h || !w || h<100 || h>250 || w<20 || w>300){
+    showToast('Please enter valid height (100–250 cm) and weight (20–300 kg).');
+    return;
+  }
+  var bmi = Math.round((w / ((h/100)*(h/100))) * 10) / 10;
+  var cat, advice, cal, prot, carb, fat, bmiTag;
+
+  if(bmi < 18.5){
+    cat='Underweight'; bmiTag='underweight';
+    advice='Focus on calorie-dense nutritious foods. Add protein and healthy fats.';
+    cal=2400; prot=100; carb=320; fat=70;
+  } else if(bmi < 25){
+    cat='Normal Weight'; bmiTag='normal';
+    advice='Maintain your current healthy weight. Keep balanced macros.';
+    cal=1900; prot=85; carb=250; fat=60;
+  } else if(bmi < 30){
+    cat='Overweight'; bmiTag='overweight';
+    advice='Reduce calorie intake. Focus on protein and fibre to stay full longer.';
+    cal=1500; prot=90; carb=170; fat=50;
+  } else {
+    cat='Obese'; bmiTag='obese';
+    advice='Consult a doctor. Focus on low-calorie, high-protein, high-fibre meals.';
+    cal=1200; prot=95; carb=130; fat=40;
+  }
+
+  // Adjust for goal
+  if(goal==='lose'){ cal=Math.max(1100,cal-200); prot=Math.min(prot+10,120); }
+  if(goal==='gain'){ cal+=300; prot+=15; carb+=30; }
+
+  _dietCurrentBmi = { bmi, cat, bmiTag, cal, prot, carb, fat };
+
+  // Show BMI result
+  document.getElementById('bmiResult').style.display='block';
+  document.getElementById('bmiValue').textContent = bmi;
+  document.getElementById('bmiCategory').textContent = cat;
+  document.getElementById('bmiAdvice').textContent = advice;
+  document.getElementById('bmiCalories').textContent = cal;
+  document.getElementById('bmiProtein').textContent = prot+'g';
+  document.getElementById('bmiCarbs').textContent = carb+'g';
+  document.getElementById('bmiFat').textContent = fat+'g';
+
+  // BMI marker position on scale bar (0–40+ BMI → 0–100%)
+  var pct = Math.min(100, Math.max(0, (bmi - 10) / 30 * 100));
+  document.getElementById('bmiMarker').style.left = pct+'%';
+
+  // Show meal plan
+  document.getElementById('dietPlanOutput').style.display='block';
+  showDietSlot('breakfast', document.getElementById('dslot-breakfast'));
+}
+
+function showDietSlot(slot, btn){
+  _dietCurrentSlot = slot;
+  document.querySelectorAll('.diet-slot-btn').forEach(function(b){
+    b.style.background='#fff';
+    b.style.color='#2E7D32';
+    b.style.border='1.5px solid #C8E6C9';
+    b.style.borderBottom='1.5px solid #C8E6C9';
+  });
+  if(btn){
+    btn.style.background='linear-gradient(135deg,#1B5E20,#43A047)';
+    btn.style.color='#fff';
+    btn.style.border='none';
+  }
+  renderDietMeals(slot);
+}
+
+function renderDietMeals(slot){
+  var grid = document.getElementById('dietMealGrid');
+  if(!grid) return;
+  var bmiTag = _dietCurrentBmi ? _dietCurrentBmi.bmiTag : 'normal';
+  var meals  = (DIET_DB[slot] || []).filter(function(m){
+    return m.bmi.includes('all') || m.bmi.includes(bmiTag);
+  });
+
+  var tagColors={'High Protein':'#E3F2FD:#1565C0','High Fiber':'#E8F5E9:#2E7D32','Low Cal':'#FFF3E0:#E65100','Omega-3':'#E8EAF6:#283593','Antioxidant':'#FCE4EC:#C62828','Energy':'#FFFDE7:#F57F17','Detox':'#E0F7FA:#00838F','Probiotic':'#F3E5F5:#6A1B9A','Immunity':'#E8F5E9:#1B5E20','Calcium':'#E3F2FD:#0D47A1','Iron':'#FBE9E7:#BF360C','Gluten Free':'#F9FBE7:#558B2F'};
+
+  grid.innerHTML = meals.map(function(m){
+    var tagHTML = m.tags.map(function(t){
+      var c=(tagColors[t]||'#F5F5F5:#555').split(':');
+      return '<span style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;background:'+c[0]+';color:'+c[1]+'">'+t+'</span>';
+    }).join(' ');
+    var typeCol = m.type==='veg' ? '#2E7D32' : '#C62828';
+    var typeBg  = m.type==='veg' ? '#E8F5E9'  : '#FFEBEE';
+    return '<div style="background:#fff;border-radius:13px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.07);border:1.5px solid #E8F5E9;display:flex;flex-direction:column;gap:8px">'+
+      '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px">'+
+        '<div style="font-size:14px;font-weight:700;color:#1B3A20;line-height:1.3;flex:1">'+m.name+'</div>'+
+        '<span style="padding:3px 8px;border-radius:10px;font-size:10px;font-weight:700;background:'+typeBg+';color:'+typeCol+';white-space:nowrap">'+( m.type==='veg'?'🌿 Veg':'🍗 Non-Veg')+'</span>'+
+      '</div>'+
+      '<div style="display:flex;gap:10px;font-size:11px;font-weight:600">'+
+        '<span style="color:#E65100">🔥 '+m.cal+' kcal</span>'+
+        '<span style="color:#1565C0">💪 '+m.prot+'g P</span>'+
+        '<span style="color:#6A1B9A">🌾 '+m.carb+'g C</span>'+
+        '<span style="color:#2E7D32">🥑 '+m.fat+'g F</span>'+
+      '</div>'+
+      '<div style="display:flex;gap:4px;flex-wrap:wrap">'+tagHTML+'</div>'+
+      '<div style="font-size:11px;color:#8B5E52;line-height:1.5">⏱ '+m.time+(m.time===0?' min (ready-to-eat)':' min')+'</div>'+
+      '<div style="font-size:11px;color:#555;line-height:1.5;background:#F9FBF9;border-radius:7px;padding:8px">'+
+        '<div style="font-weight:700;color:#1B5E20;margin-bottom:3px">🧺 Ingredients</div>'+m.ingredients+
+      '</div>'+
+      '<div style="font-size:11px;color:#555;line-height:1.6">'+
+        '<div style="font-weight:700;color:#1B5E20;margin-bottom:3px">👨‍🍳 Preparation</div>'+m.steps+
+      '</div>'+
+      '<div style="font-size:12px;font-weight:700;color:#2E7D32;text-align:right">Est. ₹'+m.price+' per serve</div>'+
+    '</div>';
+  }).join('');
+
+  if(!meals.length){
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#8B5E52"><div style="font-size:36px">🥗</div><br>No meals for this category. Try a different slot.</div>';
+  }
+}
+
+function renderDietTab(){
+  // nothing to auto-render — user fills form
+}
 
 </script>
 
