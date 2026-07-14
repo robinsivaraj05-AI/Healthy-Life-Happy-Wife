@@ -1447,6 +1447,7 @@
       </div>
       <div style="background:#fff;border-radius:14px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-bottom:16px">
         <h3 style="margin:0 0 14px;color:#1B5E20;font-size:15px;font-weight:700">⚖️ Your Body Metrics</h3>
+        <div style="margin-bottom:12px"><label style="font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:5px">👤 Person Name</label><input id="dietName" type="text" placeholder="e.g. Ravi, Priya, Amma..." style="width:100%;max-width:320px;padding:11px 14px;border-radius:9px;border:1.5px solid #C8E6C9;font-size:14px;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#2E7D32'" onblur="this.style.borderColor='#C8E6C9'"/></div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end;flex-wrap:wrap">
           <div><label style="font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:5px">Height (cm)</label>
             <input id="dietHeight" type="number" placeholder="e.g. 168" min="100" max="250" style="width:100%;padding:11px 14px;border-radius:9px;border:1.5px solid #C8E6C9;font-size:14px;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#2E7D32'" onblur="this.style.borderColor='#C8E6C9'"/></div>
@@ -1477,6 +1478,10 @@
             </div>
           </div>
         </div>
+        <div id="dietSavePanel" style="display:none;margin-top:14px;display:flex;align-items:center;gap:12px;justify-content:flex-end;flex-wrap:wrap">
+          <span style="font-size:12px;color:#555">Save this plan to the family diet list</span>
+          <button onclick="saveDietPlan()" style="padding:10px 22px;background:linear-gradient(135deg,#1B5E20,#43A047);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer">💾 Save This Plan</button>
+        </div>
       </div>
       <div id="dietPlanOutput" style="display:none">
         <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap" id="dietSlotTabs">
@@ -1487,6 +1492,25 @@
         </div>
         <div id="dietMealGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px"></div>
       </div>
+
+      <!-- ── Family Diet Members ── -->
+      <div style="background:#fff;border-radius:14px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-top:16px;margin-bottom:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1.5px solid #E8F5E9;flex-wrap:wrap;gap:10px">
+          <div style="display:flex;align-items:center;gap:8px"><span style="font-size:22px">👨‍👩‍👧‍👦</span><h3 style="margin:0;color:#1B5E20;font-size:15px;font-weight:700">Family Diet Members</h3></div>
+          <button onclick="requestDietBudget()" id="dietBudgetBtn" style="display:none;padding:9px 18px;background:linear-gradient(135deg,#E65100,#FF7043);color:#fff;border:none;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer">📋 Request Diet Budget from Admin</button>
+        </div>
+        <div id="dietMembersList"><div style="text-align:center;padding:32px;color:#8B5E52"><div style="font-size:36px;margin-bottom:8px">👤</div><div style="font-size:14px">No diet plans saved yet. Fill the form above and click "💾 Save This Plan".</div></div></div>
+      </div>
+
+      <!-- ── Monthly Diet Schedule (shown on demand) ── -->
+      <div id="dietMonthlySection" style="display:none;background:#fff;border-radius:14px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-bottom:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1.5px solid #E8F5E9;flex-wrap:wrap;gap:10px">
+          <div style="display:flex;align-items:center;gap:8px"><span style="font-size:22px">📅</span><h3 id="dietScheduleTitle" style="margin:0;color:#1B5E20;font-size:15px;font-weight:700">Monthly Diet Schedule</h3></div>
+          <button onclick="document.getElementById('dietMonthlySection').style.display='none'" style="padding:7px 14px;background:#F5F5F5;color:#555;border:1px solid #ddd;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600">✕ Close</button>
+        </div>
+        <div id="dietScheduleGrid"></div>
+      </div>
+
       <div style="background:linear-gradient(135deg,#E8F5E9,#F1F8E9);border-radius:14px;padding:18px 20px;margin-top:16px;border:1.5px solid #A5D6A7">
         <div style="font-size:14px;font-weight:700;color:#1B5E20;margin-bottom:10px">💡 Dolu Baddy's Diet Tips</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
@@ -3212,9 +3236,9 @@ function renderMyRequests(){
     }
     return '<div style="border:1.5px solid #F0DDD5;border-radius:12px;padding:16px;margin-bottom:12px">'
       +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap">'
-      +'<div><div style="font-size:15px;font-weight:800;color:#5a3e36">'+q.monthLabel+'</div>'
+      +'<div><div style="font-size:15px;font-weight:800;color:#5a3e36">'+(q.type==='diet'?'🥗 Diet Budget Request':q.monthLabel)+'</div>'
       +'<div style="font-size:12px;color:#8B5E52;margin-top:2px">Requested: '+rd+'</div>'
-      +'<div style="font-size:12px;color:#8B5E52;margin-top:1px">Items: '+q.groceryList.length+' ingredients</div></div>'
+      +(q.type==='diet'?'<div style="font-size:12px;color:#2E7D32;margin-top:1px">👨‍👩‍👧‍👦 '+(q.members||[]).length+' family members · Est. ₹'+(q.totalEstimate||0).toLocaleString()+'/month</div>':'<div style="font-size:12px;color:#8B5E52;margin-top:1px">Items: '+(q.groceryList||[]).length+' ingredients</div>')+'</div>'
       +'<div style="padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;background:'+st.bg+';color:'+st.color+'">'+st.icon+' '+_qStatusLabel(q.status)+'</div>'
       +'</div>'
       +actionHTML
@@ -4736,8 +4760,9 @@ function showAdminPanel() {
         return '<div style="border:1.5px solid #F0DDD5;border-radius:12px;padding:16px;margin-bottom:12px;background:#fff">'+
           '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap">'+
             '<div>'+
-              '<div style="font-size:15px;font-weight:800;color:#5a3e36">'+q.monthLabel+' — <span style="color:#C8604A">'+q.name+'</span> <span style="font-size:12px;color:#8B5E52">('+q.username+')</span></div>'+
-              '<div style="font-size:12px;color:#8B5E52;margin-top:2px">Requested: '+rd+' · Items: '+q.groceryList.length+'</div>'+
+              '<div style="font-size:15px;font-weight:800;color:#5a3e36">'+(q.type==='diet'?'🥗 Diet Budget':q.monthLabel)+' — <span style="color:#C8604A">'+q.name+'</span> <span style="font-size:12px;color:#8B5E52">('+q.username+')</span></div>'+
+              '<div style="font-size:12px;color:#8B5E52;margin-top:2px">Requested: '+rd+' · '+(q.type==='diet'?'Members: '+(q.members||[]).length+' · Est. ₹'+(q.totalEstimate||0).toLocaleString()+'/month':'Items: '+(q.groceryList||[]).length)+'</div>'+
+              (q.type==='diet'&&q.members&&q.members.length?'<div style="font-size:11px;color:#2E7D32;background:#F1F8E9;padding:6px 10px;border-radius:6px;margin-top:5px">'+q.members.map(function(m){return m.name+' ('+m.cat+', BMI '+m.bmi+', ₹'+( m.monthlyCost||0).toLocaleString()+'/mo)';}).join(' · ')+'</div>':'')+
               (q.userFile?'<a href="'+q.userFile+'" download="'+(q.userFileName||'user-file')+'" style="display:inline-flex;align-items:center;gap:5px;margin-top:5px;padding:5px 11px;background:#FFF8E1;color:#F57F17;border:1px solid #FFE082;border-radius:6px;font-size:11px;font-weight:700;text-decoration:none">&#128206; User File: '+(q.userFileName||'attachment')+'</a>':'')+
               (q.quotationAmt?'<div style="font-size:13px;font-weight:700;color:#6A1B9A;margin-top:3px">Quotation: &#8377; '+Number(q.quotationAmt).toLocaleString('en-IN')+(q.quotationDetails?' — '+q.quotationDetails:'')+'</div>':'')+
               (q.quotationFile?'<a href="'+q.quotationFile+'" download="'+(q.quotationFileName||'quotation')+'" style="display:inline-flex;align-items:center;gap:5px;margin-top:4px;padding:4px 10px;background:#E3F2FD;color:#1565C0;border:1px solid #90CAF9;border-radius:6px;font-size:11px;font-weight:700;text-decoration:none">&#128206; '+( q.quotationFileName||'Quotation File')+'</a>':'')+
@@ -5593,6 +5618,11 @@ var DIET_DB = {
     {id:'db10',name:'Banana Almond Smoothie',cal:280,prot:10,carb:45,fat:9,fiber:5,type:'veg',tags:['Energy','Potassium','Healthy Fats'],bmi:['underweight','normal'],time:5,price:55,ingredients:'Banana 1 · Almonds 15g · Low-fat milk 200ml · Dates 2 · Flaxseed 5g',steps:'Blend all ingredients until smooth. Serve immediately. Add ice if preferred.'},
     {id:'db11',name:'Chia Seed Pudding',cal:240,prot:9,carb:32,fat:10,fiber:10,type:'veg',tags:['Omega-3','High Fiber','Antioxidant'],bmi:['overweight','obese'],time:5,price:60,ingredients:'Chia seeds 30g · Almond milk 200ml · Mixed berries 60g · Honey 5g',steps:'Mix chia seeds in milk. Refrigerate overnight. Top with berries and honey before serving.'},
     {id:'db12',name:'Poha with Peanuts and Vegetables',cal:290,prot:10,carb:48,fat:8,fiber:4,type:'veg',tags:['Iron Rich','Energy'],bmi:['normal','underweight'],time:15,price:30,ingredients:'Flattened rice 80g · Peanuts 20g · Onion 50g · Green chilli · Mustard · Turmeric · Lemon juice · Oil 5ml',steps:'Wash poha, drain. Fry peanuts. Temper mustard, add vegetables. Add poha, lemon juice, mix well.'},
+    {id:'db13',name:'Murungai Keerai (Drumstick Leaf) Dosa',cal:200,prot:10,carb:32,fat:4,fiber:5,type:'veg',tags:['Calcium','Iron','Immunity'],bmi:['all'],time:20,price:35,ingredients:'Idli/dosa batter 150g · Murungai keerai (drumstick leaves) 40g · Onion 30g · Green chilli · Mustard seeds · Oil 5ml',steps:'Wash drumstick leaves thoroughly. Mix into batter with finely chopped onion and chilli. Pour thin dosas on hot tawa. Cook both sides on medium heat. Serve with coconut chutney. Drumstick leaves are among the most nutrient-dense foods — high in calcium, iron and Vitamin C.'},
+    {id:'db14',name:'Venthaya Keerai (Fenugreek Leaves) Oats Idli',cal:220,prot:9,carb:38,fat:4,fiber:6,type:'veg',tags:['Blood Sugar Control','Iron','Fiber'],bmi:['all'],time:20,price:30,ingredients:'Rolled oats 80g · Venthaya keerai (fenugreek leaves) 40g · Curd 60g · Rava (semolina) 20g · Mustard · Curry leaves · Salt · Oil 3ml',steps:'Grind oats to coarse powder. Mix with rava, curd, salt. Add finely chopped fenugreek leaves. Rest 15 min. Steam in idli moulds 12 min. Fenugreek leaves control blood sugar and are rich in iron — excellent for diabetics.'},
+    {id:'db15',name:'Arai Keerai (Amaranth Leaves) Smoothie Bowl',cal:180,prot:8,carb:30,fat:4,fiber:6,type:'veg',tags:['Iron','Folate','Anti-inflammatory'],bmi:['all'],time:10,price:40,ingredients:'Arai keerai (amaranth leaves) 40g · Banana 1 · Apple ½ · Almond milk 100ml · Chia seeds 10g · Honey 5g',steps:'Blend amaranth leaves with banana, apple and almond milk until smooth. Pour into bowl. Top with chia seeds, drizzle honey. Serve immediately. Amaranth leaves are rich in folate and iron — ideal for women and growing children.'},
+    {id:'db16',name:'Vallarai Keerai (Brahmi) Oats Porridge',cal:260,prot:8,carb:42,fat:6,fiber:5,type:'veg',tags:['Brain Health','Memory','Calming'],bmi:['normal','underweight'],time:10,price:35,ingredients:'Rolled oats 60g · Vallarai keerai (brahmi leaves) 20g (fresh or powder) · Low-fat milk 250ml · Banana ½ · Jaggery 10g · Cardamom pinch',steps:'Boil milk, add oats and cook 5 min. Stir in finely chopped fresh brahmi leaves. Add jaggery and cardamom. Top with sliced banana. Brahmi is used in Siddha medicine for brain health, memory and reducing stress.'},
+    {id:'db17',name:'Vazhaithandu (Banana Stem) Upma',cal:230,prot:7,carb:40,fat:5,fiber:8,type:'veg',tags:['High Fiber','Kidney Health','Detox'],bmi:['overweight','obese'],time:20,price:30,ingredients:'Rava (semolina) 80g · Banana stem 100g (finely sliced) · Onion 50g · Green chilli · Mustard seeds · Curry leaves · Lemon juice · Oil 6ml',steps:'Slice banana stem thinly, soak in buttermilk 10 min to remove astringency. Temper mustard, curry leaves, chilli, onion. Add banana stem and cook 5 min. Add rava, water 1:2, stir and cook until absorbed. Excellent for kidney stones and high-fiber weight loss.'},
   ],
   lunch:[
     {id:'dl01',name:'Grilled Chicken Salad',cal:310,prot:35,carb:15,fat:10,fiber:5,type:'non-veg',tags:['High Protein','Low Carb'],bmi:['overweight','obese'],time:25,price:120,ingredients:'Chicken breast 150g · Mixed greens 80g · Cherry tomatoes 50g · Cucumber 60g · Olive oil 8ml · Lemon · Pepper',steps:'Marinate chicken with lemon and pepper. Grill 6-7 min each side. Slice. Toss with salad. Drizzle olive oil.'},
@@ -5607,6 +5637,12 @@ var DIET_DB = {
     {id:'dl10',name:'Moong Dal Soup with Whole Wheat Bread',cal:280,prot:18,carb:40,fat:5,fiber:8,type:'veg',tags:['Detox','High Fiber','Light'],bmi:['overweight','obese'],time:20,price:40,ingredients:'Moong dal 80g · Spinach 50g · Tomato 50g · Garlic 10g · Cumin · Turmeric · Lemon · Whole wheat bread 2 slices',steps:'Cook dal with spices. Add spinach in last 5 min. Blend partially for thick soup. Finish with lemon. Serve with bread.'},
     {id:'dl11',name:'Rajma Brown Rice Bowl',cal:450,prot:22,carb:68,fat:8,fiber:14,type:'veg',tags:['High Fiber','High Protein','Iron'],bmi:['underweight','normal'],time:35,price:50,ingredients:'Rajma 100g · Brown rice 80g · Onion 80g · Tomato 80g · Garlic · Spices · Oil 8ml · Coriander',steps:'Soak and pressure cook rajma. Make tomato-onion gravy. Add rajma and simmer 15 min. Serve with brown rice.'},
     {id:'dl12',name:'Tuna Salad Wrap',cal:300,prot:32,carb:28,fat:8,fiber:4,type:'non-veg',tags:['Omega-3','High Protein','Low Cal'],bmi:['overweight','obese'],time:10,price:100,ingredients:'Canned tuna 120g · Whole wheat wrap · Lettuce · Tomato · Cucumber · Yogurt 30g · Lemon · Pepper',steps:'Mix tuna with yogurt, lemon, pepper. Layer on wrap with vegetables. Roll and serve immediately.'},
+    {id:'dl13',name:'Murungai Keerai Kootu (Drumstick Leaves Lentil Curry)',cal:320,prot:16,carb:42,fat:8,fiber:8,type:'veg',tags:['Calcium','High Protein','Iron'],bmi:['all'],time:30,price:45,ingredients:'Murungai keerai (drumstick leaves) 100g · Moong dal 80g · Grated coconut 20g · Cumin 5g · Pepper 3g · Turmeric · Oil 6ml · Mustard seeds',steps:'Cook moong dal with turmeric until soft. Grind coconut with cumin and pepper into a paste. Blanch drumstick leaves 3 min in boiling water. Combine dal, leaves and coconut paste, simmer 8 min. Temper with mustard. Serve with millet roti or brown rice.'},
+    {id:'dl14',name:'Agathi Keerai (Sesbania Leaves) Poriyal with Millet',cal:290,prot:12,carb:44,fat:7,fiber:7,type:'veg',tags:['Protein Rich','Vitamin A','Cooling'],bmi:['all'],time:25,price:40,ingredients:'Agathi keerai (sesbania leaves) 120g · Foxtail millet 80g · Grated coconut 20g · Mustard seeds · Curry leaves · Oil 6ml · Salt',steps:'Cook foxtail millet 1:2 water ratio. Blanch agathi keerai 5 min in boiling water (removes bitterness). Temper mustard, curry leaves. Sauté keerai, mix in coconut. Serve over millet. Agathi is one of the highest protein leaves in South India.'},
+    {id:'dl15',name:'Pasalai Keerai (Malabar Spinach) Rice',cal:350,prot:10,carb:62,fat:6,fiber:5,type:'veg',tags:['Iron','Calcium','Alkaline'],bmi:['normal','underweight'],time:25,price:40,ingredients:'Pasalai keerai (Malabar spinach) 150g · Brown rice 80g · Garlic 10g · Onion 50g · Tomato 50g · Mustard · Sesame oil 6ml · Salt',steps:'Cook brown rice. Sauté onion and garlic in sesame oil, add chopped Malabar spinach, stir-fry 5 min. Add tomato, season. Mix with rice. Pasalai is an alkaline food that helps balance body pH and provides iron and calcium.'},
+    {id:'dl16',name:'Vallarai Dal Bowl (Brahmi Lentils)',cal:310,prot:17,carb:45,fat:6,fiber:8,type:'veg',tags:['Brain Health','High Protein','Memory'],bmi:['all'],time:25,price:40,ingredients:'Vallarai keerai (brahmi/pennywort leaves) 30g · Toor dal 80g · Onion 60g · Tomato 60g · Garlic · Turmeric · Cumin · Oil 6ml',steps:'Cook toor dal with turmeric until soft. Sauté onion, tomato, garlic. Add finely chopped brahmi leaves (cook down fast). Combine with dal, simmer 10 min. Serve with brown rice. Vallarai is a brain tonic used in Siddha and Ayurveda for centuries.'},
+    {id:'dl17',name:'Manathakkali Keerai Sambar',cal:280,prot:12,carb:40,fat:7,fiber:8,type:'veg',tags:['Gut Health','Anti-Ulcer','Immunity'],bmi:['all'],time:30,price:40,ingredients:'Manathakkali keerai (black nightshade leaves) 80g · Toor dal 80g · Tamarind 10g · Tomato 60g · Sambar powder 8g · Small onions 40g · Oil 8ml · Mustard',steps:'Cook dal with turmeric. Make tamarind-tomato sambar base. Add manathakkali leaves and small onions. Simmer until keerai is tender. Add cooked dal, temper with mustard. Manathakkali has proven anti-ulcer, digestive and immunity-boosting properties.'},
+    {id:'dl18',name:'Ponnanganni Keerai (Sessile Joyweed) Rice',cal:330,prot:9,carb:58,fat:7,fiber:5,type:'veg',tags:['Eye Health','Skin Glow','Antioxidant'],bmi:['normal','underweight'],time:25,price:35,ingredients:'Ponnanganni keerai (sessile joyweed) 120g · Brown rice 80g · Small onions 40g · Garlic 8g · Mustard · Dry red chilli · Sesame oil 6ml',steps:'Cook brown rice. Temper mustard, dry chilli, onions, garlic in sesame oil. Add washed ponnanganni keerai, stir-fry 4 min until wilted. Mix with rice. Serve with mor (buttermilk). Ponnanganni is valued for improving eyesight, skin glow and overall immunity.'},
   ],
   dinner:[
     {id:'dd01',name:'Grilled Salmon with Asparagus',cal:340,prot:38,carb:10,fat:16,fiber:4,type:'non-veg',tags:['Omega-3','High Protein','Vitamin D'],bmi:['all'],time:20,price:200,ingredients:'Salmon fillet 180g · Asparagus 100g · Lemon · Garlic · Olive oil 8ml · Pepper · Herbs',steps:'Season salmon with lemon, garlic, herbs. Grill 5 min each side. Roast asparagus with olive oil. Serve together.'},
@@ -5621,6 +5657,11 @@ var DIET_DB = {
     {id:'dd10',name:'Stir-Fried Tofu and Broccoli',cal:220,prot:18,carb:14,fat:11,fiber:5,type:'veg',tags:['High Protein','Low Cal','Antioxidant'],bmi:['overweight','obese'],time:15,price:75,ingredients:'Tofu 150g · Broccoli 120g · Bell pepper 60g · Soy sauce 10ml · Ginger · Garlic · Sesame oil 5ml · Seeds',steps:'Pan-fry tofu until golden. Stir-fry broccoli and peppers with ginger-garlic. Add tofu, soy sauce, sesame oil.'},
     {id:'dd11',name:'Millet Vegetable Porridge',cal:280,prot:9,carb:50,fat:5,fiber:6,type:'veg',tags:['Gluten Free','Easy Digestion','Minerals'],bmi:['all'],time:20,price:35,ingredients:'Bajra or foxtail millet 70g · Mixed vegetables 100g · Cumin · Pepper · Salt · Coriander · Ghee 3g',steps:'Cook millet with vegetables and water 1:3. Season with cumin, pepper, salt. Finish with ghee and coriander.'},
     {id:'dd12',name:'Grilled Prawns with Salad',cal:240,prot:32,carb:8,fat:8,fiber:3,type:'non-veg',tags:['High Protein','Low Cal','Omega-3'],bmi:['overweight','obese'],time:15,price:160,ingredients:'Prawns 200g · Lettuce 80g · Cucumber 60g · Cherry tomato 50g · Lemon · Garlic · Olive oil 8ml · Pepper',steps:'Marinate prawns with garlic, lemon, pepper. Grill 2-3 min each side. Serve on salad with olive oil dressing.'},
+    {id:'dd13',name:'Keerai Masiyal (Mixed Greens Mash)',cal:160,prot:8,carb:20,fat:5,fiber:7,type:'veg',tags:['Detox','Iron','High Fiber'],bmi:['overweight','obese'],time:20,price:30,ingredients:'Mixed keerai (spinach + amaranth + fenugreek leaves) 200g · Garlic 8g · Green chilli 5g · Cumin 3g · Oil 5ml · Salt',steps:'Wash and chop all greens. Pressure cook with garlic, green chilli, cumin — 2 whistles. Mash coarsely. Season and drizzle oil. A Tamil Nadu classic dinner — light on stomach, full of minerals. Serve with jowar roti or brown rice.'},
+    {id:'dd14',name:'Murungai Keerai (Drumstick Leaves) Clear Soup',cal:140,prot:8,carb:16,fat:4,fiber:6,type:'veg',tags:['Calcium','Immunity','Low Cal'],bmi:['all'],time:15,price:30,ingredients:'Murungai keerai (drumstick leaves) 80g · Garlic 10g · Ginger 8g · Pepper powder 3g · Turmeric · Lemon juice 10ml · Salt',steps:'Boil 500ml water with garlic and ginger. Add drumstick leaves and cook 8 min. Season with pepper, turmeric, lemon. Can be strained or served with leaves. A healing, mineral-rich dinner soup perfect after a heavy day.'},
+    {id:'dd15',name:'Siru Keerai (Tropical Amaranth) Kootu',cal:200,prot:10,carb:28,fat:6,fiber:7,type:'veg',tags:['Iron','Protein','Calcium'],bmi:['all'],time:25,price:35,ingredients:'Siru keerai (tropical amaranth leaves) 150g · Chana dal 60g · Grated coconut 20g · Cumin · Pepper · Turmeric · Oil 5ml · Mustard seeds',steps:'Cook chana dal with turmeric until soft. Blanch siru keerai 5 min. Grind coconut with cumin and pepper. Combine keerai, dal and coconut paste. Temper with mustard. Simmer 5 min. Serve with millet or brown rice.'},
+    {id:'dd16',name:'Vazhaipoo (Banana Flower) Curry',cal:220,prot:8,carb:30,fat:7,fiber:9,type:'veg',tags:['Iron','Anti-diabetic','High Fiber'],bmi:['all'],time:35,price:40,ingredients:'Banana flower (vazhaipoo) 200g · Moong dal 50g · Grated coconut 20g · Turmeric · Coriander powder · Cumin · Small onions 50g · Oil 8ml',steps:'Clean banana flower petals, remove stamens, soak in buttermilk 10 min. Cook with moong dal. Make paste with coconut, cumin, coriander. Combine and simmer 10 min. Banana flower is a powerhouse for managing diabetes, boosting iron, and improving feminine health.'},
+    {id:'dd17',name:'Kathirikai Millet Kuzhambu (Brinjal Millet Curry)',cal:280,prot:8,carb:46,fat:7,fiber:8,type:'veg',tags:['High Fiber','Antioxidant','Gluten Free'],bmi:['overweight','obese'],time:25,price:35,ingredients:'Brinjal (kathirikai) 200g · Kodo millet 70g · Onion 60g · Tomato 60g · Tamarind 8g · Sambar powder 6g · Oil 8ml · Mustard seeds · Curry leaves',steps:'Cook kodo millet. Make tamarind-tomato gravy with sambar powder. Add cubed brinjal, cook until soft. Temper with mustard and curry leaves. Serve with millet. Low-GI combination ideal for managing weight and blood sugar.'},
   ],
   snacks:[
     {id:'ds01',name:'Mixed Nut & Seed Trail Mix',cal:190,prot:6,carb:12,fat:14,fiber:3,type:'veg',tags:['Healthy Fats','Energy','Brain Food'],bmi:['all'],time:0,price:60,ingredients:'Almonds 15g · Walnuts 10g · Cashews 8g · Pumpkin seeds 8g · Sunflower seeds 5g · Dried cranberries 10g',steps:'Mix all together. Store in an airtight box. Consume a small handful as snack. Rich in Omega-3, protein, zinc.'},
@@ -5633,6 +5674,11 @@ var DIET_DB = {
     {id:'ds08',name:'Coconut Water with Lime',cal:50,prot:1,carb:12,fat:0,fiber:1,type:'veg',tags:['Hydration','Electrolytes','Detox'],bmi:['all'],time:1,price:30,ingredients:'Fresh coconut water 250ml · Lime juice 10ml · Pinch of salt',steps:'Pour fresh coconut water in glass. Add lime juice and pinch of salt. Drink post-workout or in the afternoon.'},
     {id:'ds09',name:'Greek Yogurt with Flaxseeds',cal:170,prot:14,carb:12,fat:7,fiber:3,type:'veg',tags:['Probiotic','Omega-3','Calcium'],bmi:['all'],time:2,price:60,ingredients:'Greek yogurt 150g · Flaxseeds 10g · Honey 5g · Cinnamon pinch',steps:'Spoon yogurt into bowl. Sprinkle flaxseeds and cinnamon. Drizzle honey. Best consumed as afternoon snack.'},
     {id:'ds10',name:'Dates and Almond Energy Balls',cal:180,prot:5,carb:28,fat:8,fiber:4,type:'veg',tags:['Natural Sugar','Energy','Iron'],bmi:['underweight','normal'],time:10,price:50,ingredients:'Dates 4 · Almonds 15g · Walnuts 10g · Desiccated coconut 10g · Cardamom',steps:'Blend dates and nuts together. Roll into balls. Coat in coconut. Refrigerate. Consume 1-2 as pre-workout snack.'},
+    {id:'ds11',name:'Murungai Keerai Powder Tea (Moringa Tea)',cal:30,prot:2,carb:4,fat:0,fiber:1,type:'veg',tags:['Antioxidant','Metabolism Boost','Immunity'],bmi:['all'],time:3,price:10,ingredients:'Murungai keerai powder (moringa leaf powder) 5g · Warm water 250ml · Lemon juice 5ml · Honey 5g (optional)',steps:'Mix moringa powder in warm (not boiling) water. Add lemon juice and honey. Stir well. Drink in the morning on empty stomach or between meals. Moringa has 7× more vitamin C than oranges and 17× more calcium than milk.'},
+    {id:'ds12',name:'Vallarai Keerai (Brahmi) Juice',cal:60,prot:1,carb:14,fat:0,fiber:1,type:'veg',tags:['Brain Health','Memory','Stress Relief'],bmi:['all'],time:5,price:15,ingredients:'Vallarai keerai (brahmi/pennywort) 40g fresh leaves · Coconut water 200ml · Lime juice 10ml · Pepper pinch',steps:'Wash brahmi leaves thoroughly. Blend with coconut water. Strain well. Add lime juice and pinch of pepper. Drink fresh. Best consumed in the morning. Traditionally used in Siddha medicine as a brain tonic, memory enhancer and stress reliever.'},
+    {id:'ds13',name:'Verkadalai Sundal (Peanut Snack)',cal:200,prot:10,carb:18,fat:11,fiber:4,type:'veg',tags:['High Protein','Energy','South Indian Classic'],bmi:['normal','underweight'],time:10,price:20,ingredients:'Boiled groundnuts (peanuts) 80g · Onion 30g · Green chilli 5g · Lemon juice · Coriander leaves · Mustard seeds · Oil 4ml · Salt',steps:'Boil groundnuts until soft. Temper mustard, chilli in oil. Add drained groundnuts and onion. Squeeze lemon, toss with coriander. A classic Tamil Nadu street snack — excellent post-workout protein booster.'},
+    {id:'ds14',name:'Palakkai Vithai (Jackfruit Seeds) Boiled',cal:150,prot:6,carb:28,fat:1,fiber:4,type:'veg',tags:['High Fiber','Plant Protein','Zero Waste'],bmi:['all'],time:20,price:10,ingredients:'Jackfruit seeds (palakkai vithai) 80g · Salt · Water',steps:'Wash jackfruit seeds, boil in salted water 20 min until soft. Peel the outer brown skin. Eat warm. A traditional Tamil Nadu zero-waste snack with high fiber, iron and plant protein. Often available free from jackfruit sellers.'},
+    {id:'ds15',name:'Karumbu Juice (Sugarcane with Ginger & Lime)',cal:100,prot:0,carb:25,fat:0,fiber:0,type:'veg',tags:['Hydration','Electrolytes','Liver Health'],bmi:['underweight','normal'],time:3,price:25,ingredients:'Fresh sugarcane juice 200ml · Ginger juice 5ml · Lime juice 10ml · Pinch of rock salt',steps:'Blend fresh sugarcane juice with ginger juice. Add lime juice and pinch of rock salt. Serve over ice. Excellent for hydration, liver detox and instant energy. Best consumed between 11 AM – 3 PM. A Tamil Nadu summer staple.'},
   ]
 };
 
@@ -5691,6 +5737,7 @@ function calcBMIAndPlan(){
 
   // Show meal plan
   document.getElementById('dietPlanOutput').style.display='block';
+  document.getElementById('dietSavePanel').style.display='flex';
   showDietSlot('breakfast', document.getElementById('dslot-breakfast'));
 }
 
@@ -5755,8 +5802,186 @@ function renderDietMeals(slot){
   }
 }
 
+// ── Diet Member Persistence ────────────────────────────
+function loadDietMembers(){ try{ return JSON.parse(localStorage.getItem('jmp_diet_members'))||[]; }catch(e){ return []; } }
+function saveDietMembers(arr){ localStorage.setItem('jmp_diet_members',JSON.stringify(arr)); }
+
+function saveDietPlan(){
+  var name=(document.getElementById('dietName').value||'').trim();
+  if(!name){ showToast('Please enter a name before saving.'); return; }
+  if(!_dietCurrentBmi){ showToast('Please click "Generate Plan" first.'); return; }
+  var h=parseFloat(document.getElementById('dietHeight').value);
+  var w=parseFloat(document.getElementById('dietWeight').value);
+  var goal=document.getElementById('dietGoal').value;
+  var members=loadDietMembers();
+  var existIdx=members.findIndex(function(m){ return m.name.toLowerCase()===name.toLowerCase(); });
+  var member={
+    id: existIdx>=0 ? members[existIdx].id : 'dm_'+Date.now(),
+    name:name, height:h, weight:w, goal:goal,
+    bmi:_dietCurrentBmi.bmi, cat:_dietCurrentBmi.cat, bmiTag:_dietCurrentBmi.bmiTag,
+    cal:_dietCurrentBmi.cal, prot:_dietCurrentBmi.prot, carb:_dietCurrentBmi.carb, fat:_dietCurrentBmi.fat,
+    savedAt:new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})
+  };
+  if(existIdx>=0){ members[existIdx]=member; } else { members.push(member); }
+  saveDietMembers(members);
+  renderDietMembers();
+  showToast('✓ Diet plan saved for '+name+'! View below in Family Diet Members.');
+}
+
+function calcMemberMonthlyCost(member){
+  var total=0;
+  ['breakfast','lunch','dinner','snacks'].forEach(function(slot){
+    var meals=(DIET_DB[slot]||[]).filter(function(m){ return m.bmi.includes('all')||m.bmi.includes(member.bmiTag); });
+    if(!meals.length) return;
+    for(var d=0;d<30;d++){ total+=meals[d%meals.length].price; }
+  });
+  return total;
+}
+
+function generateMonthlyDietSchedule(member){
+  var days=[];
+  for(var d=0;d<30;d++){
+    var day={day:d+1};
+    ['breakfast','lunch','dinner','snacks'].forEach(function(slot){
+      var meals=(DIET_DB[slot]||[]).filter(function(m){ return m.bmi.includes('all')||m.bmi.includes(member.bmiTag); });
+      day[slot]=meals.length?meals[d%meals.length]:null;
+    });
+    var cost=0;
+    ['breakfast','lunch','dinner','snacks'].forEach(function(s){ if(day[s]) cost+=day[s].price; });
+    day.dayCost=cost;
+    days.push(day);
+  }
+  return days;
+}
+
+function renderDietMembers(){
+  var members=loadDietMembers();
+  var listEl=document.getElementById('dietMembersList'); if(!listEl) return;
+  var budgetBtn=document.getElementById('dietBudgetBtn');
+  if(!members.length){
+    listEl.innerHTML='<div style="text-align:center;padding:32px;color:#8B5E52"><div style="font-size:36px;margin-bottom:8px">👤</div><div style="font-size:14px">No diet plans saved yet. Fill the form above and click "💾 Save This Plan".</div></div>';
+    if(budgetBtn) budgetBtn.style.display='none';
+    return;
+  }
+  if(budgetBtn) budgetBtn.style.display='inline-block';
+  var catColors={'Underweight':'#1565C0|#E3F2FD','Normal Weight':'#2E7D32|#E8F5E9','Overweight':'#E65100|#FFF3E0','Obese':'#C62828|#FFEBEE'};
+  var goalMap={lose:'Lose Weight',maintain:'Maintain',gain:'Gain Muscle'};
+  var grandTotal=members.reduce(function(s,m){ return s+calcMemberMonthlyCost(m); },0);
+  listEl.innerHTML=
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:16px">'+
+    members.map(function(m){
+      var cc=(catColors[m.cat]||'#555|#F5F5F5').split('|');
+      var cost=calcMemberMonthlyCost(m);
+      return '<div style="background:#F9FBF9;border-radius:12px;padding:16px;border:1.5px solid #C8E6C9">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'+
+          '<div style="font-size:15px;font-weight:700;color:#1B5E20">👤 '+m.name+'</div>'+
+          '<button onclick="deleteDietMember(\''+m.id+'\')" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:15px;padding:2px 6px" title="Remove">✕</button>'+
+        '</div>'+
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">'+
+          '<span style="background:'+cc[1]+';color:'+cc[0]+';padding:3px 9px;border-radius:10px;font-size:11px;font-weight:700">'+m.cat+'</span>'+
+          '<span style="background:#FFF8E1;color:#F57F17;padding:3px 9px;border-radius:10px;font-size:11px;font-weight:700">BMI '+m.bmi+'</span>'+
+        '</div>'+
+        '<div style="font-size:12px;color:#555;margin-bottom:3px">📏 '+m.height+'cm · ⚖️ '+m.weight+'kg · 🎯 '+(goalMap[m.goal]||m.goal)+'</div>'+
+        '<div style="font-size:12px;color:#555;margin-bottom:3px">🔥 '+m.cal+' kcal · 💪 '+m.prot+'g P · 🌾 '+m.carb+'g C · 🥑 '+m.fat+'g F</div>'+
+        '<div style="font-size:13px;color:#2E7D32;font-weight:700;margin-bottom:10px">💰 Monthly Est.: ₹'+cost.toLocaleString()+'</div>'+
+        '<div style="font-size:10px;color:#aaa;margin-bottom:10px">Saved: '+m.savedAt+'</div>'+
+        '<button onclick="viewMemberSchedule(\''+m.id+'\')" style="width:100%;padding:9px;background:linear-gradient(135deg,#1B5E20,#43A047);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">📅 View 30-Day Schedule</button>'+
+      '</div>';
+    }).join('')+
+    '</div>'+
+    '<div style="background:#F1F8E9;border-radius:10px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">'+
+      '<div style="font-size:14px;font-weight:700;color:#1B5E20">👨‍👩‍👧‍👦 '+members.length+' member'+(members.length>1?'s':'')+' in Family Diet Plan</div>'+
+      '<div style="text-align:right"><div style="font-size:18px;font-weight:800;color:#E65100">₹'+grandTotal.toLocaleString()+'</div><div style="font-size:11px;color:#777">Total Monthly Diet Cost</div></div>'+
+    '</div>';
+}
+
+function viewMemberSchedule(id){
+  var members=loadDietMembers();
+  var m=members.find(function(x){ return x.id===id; });
+  if(!m) return;
+  var schedule=generateMonthlyDietSchedule(m);
+  var totalCost=schedule.reduce(function(s,d){ return s+d.dayCost; },0);
+  var titleEl=document.getElementById('dietScheduleTitle');
+  if(titleEl) titleEl.textContent='📅 '+m.name+"'s 30-Day Diet Schedule";
+  var gridEl=document.getElementById('dietScheduleGrid'); if(!gridEl) return;
+  var goalMap={lose:'Lose Weight',maintain:'Maintain',gain:'Gain Muscle'};
+  var summaryHTML='<div style="background:#F1F8E9;border-radius:10px;padding:14px 18px;margin-bottom:16px;display:flex;gap:20px;flex-wrap:wrap;align-items:center">'+
+    '<div><div style="font-size:18px;font-weight:800;color:#1B5E20">'+m.name+'</div><div style="font-size:12px;color:#555">'+m.cat+' · BMI '+m.bmi+' · '+(goalMap[m.goal]||m.goal)+'</div></div>'+
+    '<div style="font-size:13px;color:#555">🔥 Target: '+m.cal+' kcal/day</div>'+
+    '<div style="font-size:13px;color:#555">💪 Protein: '+m.prot+'g/day</div>'+
+    '<div style="margin-left:auto;text-align:right"><div style="font-size:22px;font-weight:800;color:#E65100">₹'+totalCost.toLocaleString()+'</div><div style="font-size:11px;color:#777">Est. Monthly Diet Cost</div></div>'+
+  '</div>';
+  var tableHTML='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">'+
+    '<thead><tr style="background:#1B5E20;color:#fff">'+
+      '<th style="padding:10px 12px;text-align:left;white-space:nowrap;border-radius:8px 0 0 0">Day</th>'+
+      '<th style="padding:10px 12px;text-align:left">☀️ Breakfast</th>'+
+      '<th style="padding:10px 12px;text-align:left">🌿 Lunch</th>'+
+      '<th style="padding:10px 12px;text-align:left">🌙 Dinner</th>'+
+      '<th style="padding:10px 12px;text-align:left">🥜 Snack</th>'+
+      '<th style="padding:10px 12px;text-align:right;white-space:nowrap;border-radius:0 8px 0 0">₹ Cost</th>'+
+    '</tr></thead><tbody>'+
+    schedule.map(function(day,i){
+      var bg=i%2===0?'#fff':'#F9FBF9';
+      return '<tr style="background:'+bg+';border-bottom:1px solid #E8F5E9">'+
+        '<td style="padding:8px 12px;font-weight:700;color:#1B5E20;white-space:nowrap">Day '+day.day+'</td>'+
+        '<td style="padding:8px 12px;color:#333">'+(day.breakfast?day.breakfast.name:'—')+'</td>'+
+        '<td style="padding:8px 12px;color:#333">'+(day.lunch?day.lunch.name:'—')+'</td>'+
+        '<td style="padding:8px 12px;color:#333">'+(day.dinner?day.dinner.name:'—')+'</td>'+
+        '<td style="padding:8px 12px;color:#333">'+(day.snacks?day.snacks.name:'—')+'</td>'+
+        '<td style="padding:8px 12px;text-align:right;font-weight:600;color:#E65100">₹'+day.dayCost+'</td>'+
+      '</tr>';
+    }).join('')+
+    '</tbody><tfoot><tr style="background:#E8F5E9;font-weight:700">'+
+      '<td colspan="5" style="padding:10px 12px;color:#1B5E20">Monthly Total</td>'+
+      '<td style="padding:10px 12px;text-align:right;color:#E65100;font-size:14px">₹'+totalCost.toLocaleString()+'</td>'+
+    '</tr></tfoot></table></div>';
+  gridEl.innerHTML=summaryHTML+tableHTML;
+  var sec=document.getElementById('dietMonthlySection');
+  sec.style.display='block';
+  setTimeout(function(){ sec.scrollIntoView({behavior:'smooth',block:'start'}); },100);
+}
+
+function deleteDietMember(id){
+  var members=loadDietMembers().filter(function(m){ return m.id!==id; });
+  saveDietMembers(members);
+  renderDietMembers();
+  document.getElementById('dietMonthlySection').style.display='none';
+  showToast('Member removed from family diet plan.');
+}
+
+function requestDietBudget(){
+  if(!currentUser||currentUser.isGuest){ showToast('Please sign in to request a diet budget.'); return; }
+  var members=loadDietMembers();
+  if(!members.length){ showToast('No diet plans saved yet. Save at least one family member plan first.'); return; }
+  var allQ=loadAllQuotations();
+  var existing=allQ.filter(function(q){ return q.username===currentUser.username&&q.type==='diet'&&q.status==='pending_admin'; });
+  if(existing.length){ showToast('A diet budget request is already pending admin review. Check My Requests in the Status tab.'); return; }
+  var totalCost=members.reduce(function(s,m){ return s+calcMemberMonthlyCost(m); },0);
+  var req={
+    id:'dietq_'+Date.now(),
+    type:'diet',
+    username:currentUser.username,
+    name:((currentUser.firstName||'')+' '+(currentUser.lastName||'')).trim()||currentUser.username,
+    requestDate:new Date().toISOString(),
+    monthLabel:'Diet Plan',
+    monthKey:'diet_'+Date.now(),
+    status:'pending_admin',
+    members:members.map(function(m){ return {name:m.name,bmi:m.bmi,cat:m.cat,cal:m.cal,monthlyCost:calcMemberMonthlyCost(m)}; }),
+    totalEstimate:totalCost,
+    groceryList:[],
+    userFile:null,userFileName:null,
+    adminApprovedAt:null,adminNotes:'',
+    sentToShopAt:null,
+    quotationAmt:null,quotationDetails:'',quotationFile:null,quotationFileName:null,
+    quotationReceivedAt:null,userApprovedAt:null,completedAt:null
+  };
+  allQ.push(req);
+  saveAllQuotations(allQ);
+  showToast('✓ Diet budget request sent to admin for '+members.length+' family member'+(members.length>1?'s':'')+' (Est. ₹'+totalCost.toLocaleString()+'/month). Check Status tab for updates.');
+}
+
 function renderDietTab(){
-  // nothing to auto-render — user fills form
+  renderDietMembers();
 }
 
 </script>
