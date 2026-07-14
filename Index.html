@@ -1443,6 +1443,7 @@
         <div style="flex:1">
           <h2 style="margin:0 0 4px;font-size:20px;font-weight:800">Personalised Diet Plan</h2>
           <p style="margin:0;font-size:12px;opacity:.85">Nutrition-based meals — fruits, nuts, protein &amp; protection. Pan-India. All body types.</p>
+          <div id="dietQuoteBanner" style="margin-top:8px;font-size:12px;font-style:italic;opacity:.92;padding:8px 12px;background:rgba(255,255,255,.15);border-radius:8px;line-height:1.5;width:100%"></div>
         </div>
       </div>
       <div style="background:#fff;border-radius:14px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-bottom:16px">
@@ -1459,11 +1460,15 @@
             </select></div>
           <button onclick="calcBMIAndPlan()" style="padding:11px 22px;background:linear-gradient(135deg,#1B5E20,#43A047);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">🔍 Generate Plan</button>
         </div>
+        <div style="margin-top:10px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 12px;background:#F9FBF9;border-radius:8px;border:1px solid #E8F5E9">
+          <div style="min-width:160px"><label style="font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:4px">🎯 Target Weight (kg) <span style="font-weight:400;color:#aaa;font-size:11px">(optional)</span></label><input id="dietTargetWeight" type="number" placeholder="e.g. 65" min="20" max="250" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid #C8E6C9;font-size:13px;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#2E7D32'" onblur="this.style.borderColor='#C8E6C9'"/></div>
+          <div style="font-size:12px;color:#777;line-height:1.5;flex:1;min-width:140px">Set your goal weight to track monthly progress and estimate your journey timeline.</div>
+        </div>
         <div id="bmiResult" style="display:none;margin-top:16px;padding:14px 18px;border-radius:10px;background:#F1F8E9;border:1.5px solid #AED581">
           <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">
             <div style="text-align:center"><div style="font-size:28px;font-weight:800;color:#1B5E20" id="bmiValue">--</div><div style="font-size:11px;color:#555;font-weight:600">BMI</div></div>
             <div style="width:1px;background:#AED581;align-self:stretch"></div>
-            <div><div style="font-size:14px;font-weight:700;color:#1B5E20" id="bmiCategory">--</div><div style="font-size:12px;color:#555" id="bmiAdvice">--</div></div>
+            <div><div style="font-size:14px;font-weight:700;color:#1B5E20" id="bmiCategory">--</div><div style="font-size:12px;color:#555" id="bmiAdvice">--</div><div id="bmiMotivation" style="font-size:11px;color:#2E7D32;margin-top:5px;font-style:italic;font-weight:600"></div></div>
             <div style="margin-left:auto;display:flex;gap:14px;flex-wrap:wrap">
               <div style="text-align:center"><div style="font-size:16px;font-weight:800;color:#E65100" id="bmiCalories">--</div><div style="font-size:10px;color:#777">kcal/day</div></div>
               <div style="text-align:center"><div style="font-size:16px;font-weight:800;color:#1565C0" id="bmiProtein">--</div><div style="font-size:10px;color:#777">g protein</div></div>
@@ -1497,7 +1502,10 @@
       <div style="background:#fff;border-radius:14px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-top:16px;margin-bottom:16px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1.5px solid #E8F5E9;flex-wrap:wrap;gap:10px">
           <div style="display:flex;align-items:center;gap:8px"><span style="font-size:22px">👨‍👩‍👧‍👦</span><h3 style="margin:0;color:#1B5E20;font-size:15px;font-weight:700">Family Diet Members</h3></div>
-          <button onclick="requestDietBudget()" id="dietBudgetBtn" style="display:none;padding:9px 18px;background:linear-gradient(135deg,#E65100,#FF7043);color:#fff;border:none;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer">📋 Request Diet Budget from Admin</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button onclick="addAnotherDietPerson()" style="padding:9px 16px;background:#E8F5E9;color:#1B5E20;border:1.5px solid #A5D6A7;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer">➕ Add New Person</button>
+            <button onclick="requestDietBudget()" id="dietBudgetBtn" style="display:none;padding:9px 18px;background:linear-gradient(135deg,#E65100,#FF7043);color:#fff;border:none;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer">📋 Request Budget</button>
+          </div>
         </div>
         <div id="dietMembersList"><div style="text-align:center;padding:32px;color:#8B5E52"><div style="font-size:36px;margin-bottom:8px">👤</div><div style="font-size:14px">No diet plans saved yet. Fill the form above and click "💾 Save This Plan".</div></div></div>
       </div>
@@ -1511,7 +1519,14 @@
         <div id="dietScheduleGrid"></div>
       </div>
 
-      <div style="background:linear-gradient(135deg,#E8F5E9,#F1F8E9);border-radius:14px;padding:18px 20px;margin-top:16px;border:1.5px solid #A5D6A7">
+      <!-- Dolu Baddy's Signature Plans -->
+      <div style="background:linear-gradient(135deg,#1A237E,#283593 40%,#1B5E20 100%);border-radius:14px;padding:20px 22px;margin-top:16px;margin-bottom:16px;color:#fff">
+        <div style="font-size:16px;font-weight:800;margin-bottom:4px">🌟 Dolu Baddy's Signature Plans</div>
+        <div style="font-size:12px;opacity:.85;margin-bottom:14px">Research-backed curated 7-day plans — pick one, follow it, transform your health. My gift to your family. 💚</div>
+        <div id="duluPlansGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px"></div>
+      </div>
+
+      <div style="background:linear-gradient(135deg,#E8F5E9,#F1F8E9);border-radius:14px;padding:18px 20px;margin-top:0;border:1.5px solid #A5D6A7">
         <div style="font-size:14px;font-weight:700;color:#1B5E20;margin-bottom:10px">💡 Dolu Baddy's Diet Tips</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
           <div style="font-size:12px;color:#2E7D32;line-height:1.7">✅ Drink 8–10 glasses of water daily<br>✅ Eat every 3–4 hours — never skip meals<br>✅ Include a protein source in every meal<br>✅ Have fruits before 4 PM for best absorption</div>
@@ -5726,6 +5741,7 @@ function calcBMIAndPlan(){
   document.getElementById('bmiValue').textContent = bmi;
   document.getElementById('bmiCategory').textContent = cat;
   document.getElementById('bmiAdvice').textContent = advice;
+  var motEl=document.getElementById('bmiMotivation'); if(motEl) motEl.textContent='✨ '+getDietQuote();
   document.getElementById('bmiCalories').textContent = cal;
   document.getElementById('bmiProtein').textContent = prot+'g';
   document.getElementById('bmiCarbs').textContent = carb+'g';
@@ -5808,24 +5824,34 @@ function saveDietMembers(arr){ localStorage.setItem('jmp_diet_members',JSON.stri
 
 function saveDietPlan(){
   var name=(document.getElementById('dietName').value||'').trim();
-  if(!name){ showToast('Please enter a name before saving.'); return; }
-  if(!_dietCurrentBmi){ showToast('Please click "Generate Plan" first.'); return; }
+  if(!name){ showToast('Please enter a person name before saving.'); return; }
+  if(!_dietCurrentBmi){ showToast('Please click "Generate Plan" first, then save.'); return; }
   var h=parseFloat(document.getElementById('dietHeight').value);
   var w=parseFloat(document.getElementById('dietWeight').value);
   var goal=document.getElementById('dietGoal').value;
+  var twEl=document.getElementById('dietTargetWeight');
+  var tw=twEl&&twEl.value?parseFloat(twEl.value):null;
   var members=loadDietMembers();
   var existIdx=members.findIndex(function(m){ return m.name.toLowerCase()===name.toLowerCase(); });
+  var now=new Date();
+  var existing=existIdx>=0?members[existIdx]:{};
   var member={
-    id: existIdx>=0 ? members[existIdx].id : 'dm_'+Date.now(),
+    id: existing.id||'dm_'+Date.now(),
     name:name, height:h, weight:w, goal:goal,
     bmi:_dietCurrentBmi.bmi, cat:_dietCurrentBmi.cat, bmiTag:_dietCurrentBmi.bmiTag,
     cal:_dietCurrentBmi.cal, prot:_dietCurrentBmi.prot, carb:_dietCurrentBmi.carb, fat:_dietCurrentBmi.fat,
-    savedAt:new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})
+    savedAt:now.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}),
+    startDate: existing.startDate||now.toISOString(),
+    startWeight: existing.startWeight||w,
+    currentWeight: existing.currentWeight||w,
+    targetWeight: tw||existing.targetWeight||null,
+    weightLog: existing.weightLog||[{date:now.toISOString(),weight:w,note:'Diet start'}]
   };
   if(existIdx>=0){ members[existIdx]=member; } else { members.push(member); }
   saveDietMembers(members);
   renderDietMembers();
-  showToast('✓ Diet plan saved for '+name+'! View below in Family Diet Members.');
+  showToast('✓ Saved! '+name+"'s plan is in Family Diet Members below. "+getDietQuote());
+  setTimeout(function(){ var el=document.getElementById('dietMembersList'); if(el) el.scrollIntoView({behavior:'smooth',block:'nearest'}); },500);
 }
 
 function calcMemberMonthlyCost(member){
@@ -5859,38 +5885,58 @@ function renderDietMembers(){
   var listEl=document.getElementById('dietMembersList'); if(!listEl) return;
   var budgetBtn=document.getElementById('dietBudgetBtn');
   if(!members.length){
-    listEl.innerHTML='<div style="text-align:center;padding:32px;color:#8B5E52"><div style="font-size:36px;margin-bottom:8px">👤</div><div style="font-size:14px">No diet plans saved yet. Fill the form above and click "💾 Save This Plan".</div></div>';
+    listEl.innerHTML='<div style="text-align:center;padding:32px;color:#8B5E52"><div style="font-size:36px;margin-bottom:8px">👤</div><div style="font-size:14px;margin-bottom:12px">No diet plans saved yet.<br>Enter Name → Height → Weight → Goal → "Generate Plan" → "💾 Save This Plan".</div></div>';
     if(budgetBtn) budgetBtn.style.display='none';
     return;
   }
   if(budgetBtn) budgetBtn.style.display='inline-block';
   var catColors={'Underweight':'#1565C0|#E3F2FD','Normal Weight':'#2E7D32|#E8F5E9','Overweight':'#E65100|#FFF3E0','Obese':'#C62828|#FFEBEE'};
-  var goalMap={lose:'Lose Weight',maintain:'Maintain',gain:'Gain Muscle'};
+  var goalMap={lose:'🎯 Lose Weight',maintain:'⚖️ Maintain',gain:'💪 Gain Muscle'};
   var grandTotal=members.reduce(function(s,m){ return s+calcMemberMonthlyCost(m); },0);
   listEl.innerHTML=
-    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:16px">'+
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:16px">'+
     members.map(function(m){
       var cc=(catColors[m.cat]||'#555|#F5F5F5').split('|');
       var cost=calcMemberMonthlyCost(m);
-      return '<div style="background:#F9FBF9;border-radius:12px;padding:16px;border:1.5px solid #C8E6C9">'+
+      var prog=calcWeightProgress(m);
+      var progressHTML='';
+      if(m.targetWeight&&m.startWeight){
+        var barCol=m.goal==='gain'?'#1565C0':'#2E7D32';
+        progressHTML='<div style="background:#F1F8E9;border-radius:8px;padding:10px 12px;margin-bottom:10px">'+
+          '<div style="font-size:11px;font-weight:700;color:#1B5E20;margin-bottom:5px">📊 Weight Journey</div>'+
+          '<div style="font-size:11px;color:#555;margin-bottom:4px">'+
+            'Start <b>'+prog.startWeight+'kg</b> → Now <b>'+(prog.currentWeight||prog.startWeight)+'kg</b> → Goal <b>'+m.targetWeight+'kg</b>'+
+          '</div>'+
+          (prog.changed>0?
+            '<div style="height:7px;background:#E0E0E0;border-radius:4px;margin:5px 0;overflow:hidden"><div style="height:100%;width:'+prog.pct+'%;background:'+barCol+';border-radius:4px"></div></div>'+
+            '<div style="font-size:11px;color:'+barCol+';font-weight:600">'+prog.pct+'% · '+(m.goal==='gain'?'Gained':'Lost')+' '+prog.changed+'kg · '+prog.remaining+'kg remaining'+(prog.estWeeks?' · ~'+prog.estWeeks+' weeks to goal':'')+' 🎉</div>'
+          :'<div style="font-size:10px;color:#aaa">Log your weight monthly to track progress →</div>')+
+        '</div>';
+      }
+      return '<div style="background:#F9FBF9;border-radius:12px;padding:16px;border:1.5px solid #C8E6C9;display:flex;flex-direction:column;gap:0">'+
         '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'+
           '<div style="font-size:15px;font-weight:700;color:#1B5E20">👤 '+m.name+'</div>'+
           '<button onclick="deleteDietMember(\''+m.id+'\')" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:15px;padding:2px 6px" title="Remove">✕</button>'+
         '</div>'+
-        '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">'+
-          '<span style="background:'+cc[1]+';color:'+cc[0]+';padding:3px 9px;border-radius:10px;font-size:11px;font-weight:700">'+m.cat+'</span>'+
-          '<span style="background:#FFF8E1;color:#F57F17;padding:3px 9px;border-radius:10px;font-size:11px;font-weight:700">BMI '+m.bmi+'</span>'+
+        '<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px">'+
+          '<span style="background:'+cc[1]+';color:'+cc[0]+';padding:3px 8px;border-radius:10px;font-size:11px;font-weight:700">'+m.cat+'</span>'+
+          '<span style="background:#FFF8E1;color:#F57F17;padding:3px 8px;border-radius:10px;font-size:11px;font-weight:700">BMI '+m.bmi+'</span>'+
+          '<span style="background:#E8F5E9;color:#2E7D32;padding:3px 8px;border-radius:10px;font-size:11px;font-weight:600">'+(goalMap[m.goal]||m.goal)+'</span>'+
         '</div>'+
-        '<div style="font-size:12px;color:#555;margin-bottom:3px">📏 '+m.height+'cm · ⚖️ '+m.weight+'kg · 🎯 '+(goalMap[m.goal]||m.goal)+'</div>'+
-        '<div style="font-size:12px;color:#555;margin-bottom:3px">🔥 '+m.cal+' kcal · 💪 '+m.prot+'g P · 🌾 '+m.carb+'g C · 🥑 '+m.fat+'g F</div>'+
-        '<div style="font-size:13px;color:#2E7D32;font-weight:700;margin-bottom:10px">💰 Monthly Est.: ₹'+cost.toLocaleString()+'</div>'+
-        '<div style="font-size:10px;color:#aaa;margin-bottom:10px">Saved: '+m.savedAt+'</div>'+
-        '<button onclick="viewMemberSchedule(\''+m.id+'\')" style="width:100%;padding:9px;background:linear-gradient(135deg,#1B5E20,#43A047);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">📅 View 30-Day Schedule</button>'+
+        '<div style="font-size:11px;color:#555;margin-bottom:2px">📏 '+m.height+'cm · ⚖️ '+m.weight+'kg</div>'+
+        '<div style="font-size:11px;color:#555;margin-bottom:4px">🔥 '+m.cal+' kcal · 💪 '+m.prot+'g P · 🌾 '+m.carb+'g C · 🥑 '+m.fat+'g F</div>'+
+        '<div style="font-size:10px;color:#aaa;margin-bottom:8px">🗓️ On plan since: '+prog.startDateStr+' ('+prog.daysOn+' days)</div>'+
+        progressHTML+
+        '<div style="font-size:12px;color:#E65100;font-weight:700;margin-bottom:10px">💰 Est. ₹'+cost.toLocaleString()+'/month</div>'+
+        '<div style="display:flex;flex-direction:column;gap:6px">'+
+          '<button onclick="viewMemberSchedule(\''+m.id+'\')" style="padding:9px;background:linear-gradient(135deg,#1B5E20,#43A047);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">📅 View 30-Day Schedule</button>'+
+          '<button onclick="logMemberWeight(\''+m.id+'\')" style="padding:9px;background:#E3F2FD;color:#1565C0;border:1.5px solid #90CAF9;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">📊 Log Today\'s Weight</button>'+
+        '</div>'+
       '</div>';
     }).join('')+
     '</div>'+
     '<div style="background:#F1F8E9;border-radius:10px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">'+
-      '<div style="font-size:14px;font-weight:700;color:#1B5E20">👨‍👩‍👧‍👦 '+members.length+' member'+(members.length>1?'s':'')+' in Family Diet Plan</div>'+
+      '<div style="font-size:14px;font-weight:700;color:#1B5E20">👨‍👩‍👧‍👦 '+members.length+' member'+(members.length>1?'s':'')+' on Family Diet Plan</div>'+
       '<div style="text-align:right"><div style="font-size:18px;font-weight:800;color:#E65100">₹'+grandTotal.toLocaleString()+'</div><div style="font-size:11px;color:#777">Total Monthly Diet Cost</div></div>'+
     '</div>';
 }
@@ -5924,10 +5970,10 @@ function viewMemberSchedule(id){
       var bg=i%2===0?'#fff':'#F9FBF9';
       return '<tr style="background:'+bg+';border-bottom:1px solid #E8F5E9">'+
         '<td style="padding:8px 12px;font-weight:700;color:#1B5E20;white-space:nowrap">Day '+day.day+'</td>'+
-        '<td style="padding:8px 12px;color:#333">'+(day.breakfast?day.breakfast.name:'—')+'</td>'+
-        '<td style="padding:8px 12px;color:#333">'+(day.lunch?day.lunch.name:'—')+'</td>'+
-        '<td style="padding:8px 12px;color:#333">'+(day.dinner?day.dinner.name:'—')+'</td>'+
-        '<td style="padding:8px 12px;color:#333">'+(day.snacks?day.snacks.name:'—')+'</td>'+
+        '<td style="padding:8px 12px">'+(day.breakfast?'<span style="color:#1B5E20;cursor:pointer;font-weight:600;text-decoration:underline dotted" onclick="showDietMealDetail(\''+day.breakfast.id+'\')">'+day.breakfast.name+'</span>':'—')+'</td>'+
+        '<td style="padding:8px 12px">'+(day.lunch?'<span style="color:#1B5E20;cursor:pointer;font-weight:600;text-decoration:underline dotted" onclick="showDietMealDetail(\''+day.lunch.id+'\')">'+day.lunch.name+'</span>':'—')+'</td>'+
+        '<td style="padding:8px 12px">'+(day.dinner?'<span style="color:#1B5E20;cursor:pointer;font-weight:600;text-decoration:underline dotted" onclick="showDietMealDetail(\''+day.dinner.id+'\')">'+day.dinner.name+'</span>':'—')+'</td>'+
+        '<td style="padding:8px 12px">'+(day.snacks?'<span style="color:#1B5E20;cursor:pointer;font-weight:600;text-decoration:underline dotted" onclick="showDietMealDetail(\''+day.snacks.id+'\')">'+day.snacks.name+'</span>':'—')+'</td>'+
         '<td style="padding:8px 12px;text-align:right;font-weight:600;color:#E65100">₹'+day.dayCost+'</td>'+
       '</tr>';
     }).join('')+
@@ -5980,8 +6026,281 @@ function requestDietBudget(){
   showToast('✓ Diet budget request sent to admin for '+members.length+' family member'+(members.length>1?'s':'')+' (Est. ₹'+totalCost.toLocaleString()+'/month). Check Status tab for updates.');
 }
 
+// ── Motivational Quotes ─────────────────────────────────
+var DIET_QUOTES=[
+  'Your body hears everything your mind says. Stay positive! 🌟',
+  'Every healthy meal is one step closer to a better you. 💚',
+  'Small daily improvements lead to stunning results. Trust the process! 🌱',
+  'Your health is an investment, not an expense. 💰',
+  'Eat to fuel your body, not to fill your emotions. 🥗',
+  'A healthy outside starts from the inside. 🌿',
+  'Take care of your body — it\'s the only home you\'ll ever live in. 🏡',
+  'The food you eat can be the safest medicine or the slowest poison. Choose wisely! 🍎',
+  'Discipline is choosing between what you want NOW and what you want MOST. ⚖️',
+  'Consistency beats perfection. Just keep showing up! 💪',
+  'Your future self will thank you for the choices you make today. 🙏',
+  'பல்வகை கீரைகள் உண்டால் பல நோய்கள் விலகும் — Tamil Wisdom 🌿',
+  'Murungai keerai daily keeps the doctor away! 100× more nutrients than most vegetables. 🌱',
+  'Water is the medicine of all medicines. Drink 8–10 glasses today! 💧',
+  'Sleep 7–8 hours — your body does most of its repair work while you sleep! 😴',
+  'Walking 10,000 steps a day burns ~400 kcal. Simple and powerful! 🚶',
+  'Millets were the original superfood of India. Time to bring them back! 🌾',
+  'Eating slowly reduces calorie intake by 20%. Chew 20 times per bite! 😌'
+];
+function getDietQuote(){
+  return DIET_QUOTES[Math.floor(Math.random()*DIET_QUOTES.length)];
+}
+
+// ── Weight Progress Calculator ───────────────────────────
+function calcWeightProgress(member){
+  var startDate=member.startDate?new Date(member.startDate):new Date();
+  var today=new Date();
+  var daysOn=Math.max(0,Math.round((today-startDate)/(1000*60*60*24)));
+  var startWeight=member.startWeight||member.weight;
+  var currentWeight=member.currentWeight||(member.weightLog&&member.weightLog.length?member.weightLog[member.weightLog.length-1].weight:startWeight);
+  var targetWeight=member.targetWeight||null;
+  var result={daysOn:daysOn, startWeight:startWeight, currentWeight:currentWeight, targetWeight:targetWeight};
+  result.startDateStr=startDate.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  if(targetWeight){
+    var totalToChange=Math.abs(startWeight-targetWeight);
+    var changed=parseFloat(Math.abs(startWeight-currentWeight).toFixed(1));
+    var remaining=parseFloat(Math.abs(currentWeight-targetWeight).toFixed(1));
+    result.changed=changed; result.remaining=remaining;
+    result.pct=totalToChange>0?Math.min(100,Math.round(changed/totalToChange*100)):0;
+    if(daysOn>7&&changed>0.3){
+      var rate=changed/daysOn;
+      result.estWeeks=Math.round(remaining/rate/7);
+    } else {
+      result.estWeeks=Math.round(remaining/(member.goal==='gain'?0.25:0.5));
+    }
+  }
+  return result;
+}
+
+// ── Add Another Person ───────────────────────────────────
+function addAnotherDietPerson(){
+  ['dietName','dietHeight','dietWeight','dietTargetWeight'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('dietGoal').value='maintain';
+  document.getElementById('bmiResult').style.display='none';
+  document.getElementById('dietSavePanel').style.display='none';
+  document.getElementById('dietPlanOutput').style.display='none';
+  _dietCurrentBmi=null;
+  var nameEl=document.getElementById('dietName');
+  if(nameEl){ nameEl.scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(function(){ nameEl.focus(); },400); }
+  showToast('Form cleared. Enter the new family member\'s details and generate their plan!');
+}
+
+// ── Weight Log Modal ─────────────────────────────────────
+function logMemberWeight(id){
+  var members=loadDietMembers();
+  var m=members.find(function(x){ return x.id===id; });
+  if(!m) return;
+  var lastW=(m.weightLog&&m.weightLog.length)?m.weightLog[m.weightLog.length-1].weight:m.weight;
+  var histHTML=(m.weightLog&&m.weightLog.length>1)?m.weightLog.slice(-5).reverse().map(function(e){
+    return '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #E8F5E9;font-size:12px">'+
+      '<span>'+new Date(e.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})+'</span>'+
+      '<span style="font-weight:700;color:#1B5E20">'+e.weight+' kg</span>'+
+      (e.note?'<span style="color:#aaa;font-size:10px">'+e.note+'</span>':'')+'</div>';
+  }).join(''):'';
+  var el=document.getElementById('dietWeightLogOverlay'); if(el) el.remove();
+  var ov=document.createElement('div');
+  ov.id='dietWeightLogOverlay';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px';
+  ov.onclick=function(e){ if(e.target===ov) ov.remove(); };
+  ov.innerHTML='<div style="background:#fff;border-radius:16px;padding:24px;max-width:360px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.2)">'+
+    '<div style="font-size:16px;font-weight:700;color:#1B5E20;margin-bottom:4px">📊 Log Weight — '+m.name+'</div>'+
+    (m.targetWeight?'<div style="font-size:12px;color:#555;margin-bottom:14px">Target: '+m.targetWeight+'kg · '+Math.abs(lastW-m.targetWeight).toFixed(1)+'kg to go</div>':'<div style="margin-bottom:14px"></div>')+
+    '<div style="margin-bottom:14px"><label style="font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:5px">Today\'s Weight (kg)</label>'+
+      '<input id="logWeightInput" type="number" step="0.1" min="20" max="300" placeholder="e.g. 80.5" style="width:100%;padding:11px 14px;border-radius:9px;border:1.5px solid #C8E6C9;font-size:15px;font-weight:600;outline:none;box-sizing:border-box"/>'+
+      '<div style="font-size:11px;color:#aaa;margin-top:4px">Last logged: '+lastW+' kg</div></div>'+
+    (histHTML?'<div style="margin-bottom:14px;padding:10px 12px;background:#F9FBF9;border-radius:8px"><div style="font-size:11px;font-weight:700;color:#1B5E20;margin-bottom:6px">Recent Weight History</div>'+histHTML+'</div>':'')+
+    '<div style="display:flex;gap:10px">'+
+      '<button onclick="saveMemberWeight(\''+id+'\')" style="flex:1;padding:12px;background:linear-gradient(135deg,#1B5E20,#43A047);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">💾 Save</button>'+
+      '<button onclick="document.getElementById(\'dietWeightLogOverlay\').remove()" style="padding:12px 18px;background:none;border:1.5px solid #C8E6C9;border-radius:10px;font-size:13px;cursor:pointer;color:#555">Cancel</button>'+
+    '</div></div>';
+  document.body.appendChild(ov);
+  setTimeout(function(){ var i=document.getElementById('logWeightInput'); if(i) i.focus(); },50);
+}
+function saveMemberWeight(id){
+  var val=parseFloat(document.getElementById('logWeightInput').value);
+  if(!val||val<20||val>300){ showToast('Please enter a valid weight (20–300 kg).'); return; }
+  var members=loadDietMembers();
+  var m=members.find(function(x){ return x.id===id; });
+  if(!m) return;
+  if(!m.weightLog) m.weightLog=[];
+  var today=new Date().toISOString().split('T')[0];
+  var existing=m.weightLog.find(function(e){ return e.date.startsWith(today); });
+  if(existing){ existing.weight=val; } else { m.weightLog.push({date:new Date().toISOString(),weight:val}); }
+  m.currentWeight=val;
+  saveDietMembers(members);
+  var ov=document.getElementById('dietWeightLogOverlay'); if(ov) ov.remove();
+  var prog=calcWeightProgress(m);
+  var msg='✓ Weight logged for '+m.name+': '+val+' kg!';
+  if(prog.changed>0) msg+=' '+(m.goal==='gain'?'Gained '+prog.changed+'kg':'Lost '+prog.changed+'kg')+' since start. Keep going! 🎉';
+  showToast(msg);
+  renderDietMembers();
+}
+
+// ── Meal Detail Modal (bottom sheet) ─────────────────────
+function showDietMealDetail(id){
+  var meal=null;
+  ['breakfast','lunch','dinner','snacks'].forEach(function(slot){
+    var f=(DIET_DB[slot]||[]).find(function(m){ return m.id===id; });
+    if(f) meal=f;
+  });
+  if(!meal){ showToast('Meal details not found.'); return; }
+  var tagCols={'High Protein':'#E3F2FD|#1565C0','High Fiber':'#E8F5E9|#2E7D32','Low Cal':'#FFF3E0|#E65100','Omega-3':'#E8EAF6|#283593','Antioxidant':'#FCE4EC|#C62828','Energy':'#FFFDE7|#F57F17','Detox':'#E0F7FA|#00838F','Probiotic':'#F3E5F5|#6A1B9A','Immunity':'#E8F5E9|#1B5E20','Calcium':'#E3F2FD|#0D47A1','Iron':'#FBE9E7|#BF360C','Gluten Free':'#F9FBE7|#558B2F','Brain Health':'#EDE7F6|#4527A0','Blood Sugar Control':'#E8F5E9|#2E7D32','Gut Health':'#E8F5E9|#33691E','South Indian Classic':'#FFF3E0|#E65100'};
+  var tagHTML=meal.tags.map(function(t){ var c=(tagCols[t]||'#F5F5F5|#555').split('|'); return '<span style="padding:3px 9px;border-radius:10px;font-size:11px;font-weight:700;background:'+c[0]+';color:'+c[1]+'">'+t+'</span>'; }).join(' ');
+  var typeCol=meal.type==='veg'?'#2E7D32':'#C62828';
+  var typeBg=meal.type==='veg'?'#E8F5E9':'#FFEBEE';
+  var tipsByTag={
+    'High Protein':'💪 Protein keeps you full longer and builds muscle. Great for your goal!',
+    'Calcium':'🦴 Calcium builds strong bones. Especially important after age 30!',
+    'Iron':'🩸 Iron prevents anaemia. Best absorbed with Vitamin C foods.',
+    'Brain Health':'🧠 This meal nourishes your brain. Great for focus and memory!',
+    'Immunity':'🛡️ Immunity boosting meal. Have this especially during season changes!',
+    'Gut Health':'🌿 Good for your digestive system. A happy gut = a happy you!',
+    'Antioxidant':'🫐 Antioxidants fight aging and protect your cells. Excellent choice!',
+    'Detox':'🌊 Light detoxifying meal. Perfect for evenings!',
+    'South Indian Classic':'🏠 A traditional South Indian treasure. Ancient wisdom for modern health!'
+  };
+  var tip=''; for(var k in tipsByTag){ if(meal.tags.indexOf(k)>=0){ tip=tipsByTag[k]; break; } }
+  var el=document.getElementById('dietMealDetailOverlay'); if(el) el.remove();
+  var ov=document.createElement('div');
+  ov.id='dietMealDetailOverlay';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:9999';
+  ov.onclick=function(e){ if(e.target===ov) ov.remove(); };
+  ov.innerHTML='<div style="background:#fff;border-radius:20px 20px 0 0;padding:20px 20px 36px;max-width:520px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 -4px 30px rgba(0,0,0,.2)">'+
+    '<div style="width:40px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 16px"></div>'+
+    '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px">'+
+      '<div style="font-size:17px;font-weight:800;color:#1B3A20;flex:1;line-height:1.3">'+meal.name+'</div>'+
+      '<span style="padding:4px 10px;border-radius:10px;font-size:11px;font-weight:700;background:'+typeBg+';color:'+typeCol+';white-space:nowrap">'+(meal.type==='veg'?'🌿 Veg':'🍗 Non-Veg')+'</span>'+
+    '</div>'+
+    '<div style="display:flex;gap:14px;margin-bottom:10px;flex-wrap:wrap">'+
+      '<span style="font-size:13px;font-weight:700;color:#E65100">🔥 '+meal.cal+' kcal</span>'+
+      '<span style="font-size:13px;font-weight:700;color:#1565C0">💪 '+meal.prot+'g Protein</span>'+
+      '<span style="font-size:13px;font-weight:700;color:#6A1B9A">🌾 '+meal.carb+'g Carbs</span>'+
+      '<span style="font-size:13px;font-weight:700;color:#2E7D32">🥑 '+meal.fat+'g Fat</span>'+
+      (meal.fiber?'<span style="font-size:13px;font-weight:700;color:#558B2F">🌱 '+meal.fiber+'g Fiber</span>':'')+
+    '</div>'+
+    '<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">'+tagHTML+'</div>'+
+    '<div style="font-size:12px;color:#8B5E52;margin-bottom:14px">⏱ '+meal.time+(meal.time===0?' min (ready-to-eat)':' min prep')+' · Est. ₹'+meal.price+' per serve</div>'+
+    (tip?'<div style="background:#E8F5E9;border-radius:9px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#1B5E20;font-style:italic;font-weight:600;line-height:1.6">'+tip+'</div>':'')+
+    '<div style="background:#F9FBF9;border-radius:10px;padding:12px 14px;margin-bottom:12px">'+
+      '<div style="font-size:13px;font-weight:700;color:#1B5E20;margin-bottom:8px">🧺 Ingredients</div>'+
+      '<div style="font-size:12px;color:#333;line-height:1.8">'+meal.ingredients.split(' · ').map(function(i){ return '• '+i; }).join('<br>')+'</div>'+
+    '</div>'+
+    '<div style="background:#F1F8E9;border-radius:10px;padding:12px 14px;margin-bottom:16px">'+
+      '<div style="font-size:13px;font-weight:700;color:#1B5E20;margin-bottom:8px">👨‍🍳 Preparation</div>'+
+      '<div style="font-size:12px;color:#333;line-height:1.8">'+meal.steps+'</div>'+
+    '</div>'+
+    '<button onclick="document.getElementById(\'dietMealDetailOverlay\').remove()" style="width:100%;padding:14px;background:linear-gradient(135deg,#1B5E20,#43A047);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">✓ Got it!</button>'+
+  '</div>';
+  document.body.appendChild(ov);
+}
+
+// ── Dolu Baddy's Signature Plans ─────────────────────────
+var DOLU_PLANS=[
+  {id:'dolu1',title:'🌿 TN Heritage Detox (7 Days)',subtitle:'Tamil Nadu ancient greens — heal from within',color:'#1B5E20',bg:'#E8F5E9',
+    days:[
+      {day:1,b:'Murungai Keerai Dosa',l:'Murungai Keerai Kootu + Brown Rice',d:'Murungai Keerai Clear Soup',s:'Moringa Tea'},
+      {day:2,b:'Venthaya Keerai Oats Idli',l:'Manathakkali Keerai Sambar',d:'Keerai Masiyal + Jowar Roti',s:'Vallarai Juice'},
+      {day:3,b:'Arai Keerai Smoothie Bowl',l:'Agathi Keerai Poriyal + Millet',d:'Siru Keerai Kootu',s:'Jackfruit Seeds Boiled'},
+      {day:4,b:'Vallarai Oats Porridge',l:'Vallarai Dal Bowl',d:'Murungai Keerai Clear Soup',s:'Moringa Tea'},
+      {day:5,b:'Murungai Keerai Dosa',l:'Ponnanganni Keerai Rice',d:'Vazhaipoo Curry',s:'Karumbu Juice'},
+      {day:6,b:'Vazhaithandu Upma',l:'Pasalai Keerai Rice',d:'Kathirikai Millet Kuzhambu',s:'Groundnut Sundal'},
+      {day:7,b:'Arai Keerai Smoothie Bowl',l:'Murungai Keerai Kootu',d:'Keerai Masiyal',s:'Vallarai Juice'}
+    ],
+    benefit:'Boosts immunity (Vitamin C), strengthens bones (Calcium from Murungai), fights anaemia (Iron from Keerai), detoxifies liver, improves digestion, anti-ulcer properties (Manathakkali).'
+  },
+  {id:'dolu2',title:'🧠 Brain & Focus Booster (7 Days)',subtitle:'Sharpen mind — memory, clarity, stress relief',color:'#283593',bg:'#E8EAF6',
+    days:[
+      {day:1,b:'Vallarai Oats Porridge',l:'Vallarai Dal Bowl',d:'Grilled Salmon with Asparagus',s:'Vallarai Juice'},
+      {day:2,b:'Chia Seed Pudding',l:'Tofu Stir-Fry with Vegetables',d:'Moong Dal Soup + Whole Wheat Bread',s:'Mixed Nut & Seed Trail Mix'},
+      {day:3,b:'Banana Almond Smoothie',l:'Chickpea Salad Bowl',d:'Dal Makhani (Low Fat)',s:'Greek Yogurt with Flaxseeds'},
+      {day:4,b:'Vallarai Oats Porridge',l:'Quinoa Vegetable Bowl',d:'Palak Paneer with Millet Roti',s:'Dates & Almond Energy Balls'},
+      {day:5,b:'Greek Yogurt Parfait with Nuts',l:'Grilled Fish with Steamed Vegetables',d:'Lentil Soup',s:'Vallarai Juice'},
+      {day:6,b:'Overnight Oats with Mixed Berries',l:'Vallarai Dal Bowl',d:'Egg & Spinach Bhurji with Roti',s:'Mixed Nut & Seed Trail Mix'},
+      {day:7,b:'Banana Almond Smoothie',l:'Brown Rice Dal Khichdi',d:'Grilled Salmon with Asparagus',s:'Greek Yogurt with Flaxseeds'}
+    ],
+    benefit:'Brahmi (Vallarai) for brain health & memory. Omega-3 (Salmon, Walnuts) for cognitive function. Chia & Flaxseed for focus. Protein for neurotransmitters. Antioxidants fight mental aging.'
+  },
+  {id:'dolu3',title:'🛡️ Immunity Warrior (7 Days)',subtitle:'Build your natural shield — fight disease daily',color:'#B71C1C',bg:'#FFEBEE',
+    days:[
+      {day:1,b:'Murungai Keerai Dosa',l:'Manathakkali Keerai Sambar',d:'Murungai Keerai Clear Soup',s:'Moringa Tea + Fresh Fruit Bowl'},
+      {day:2,b:'Sprouts Salad with Lemon',l:'Chickpea Salad Bowl',d:'Mixed Vegetable Soup',s:'Hummus with Carrot & Celery'},
+      {day:3,b:'Arai Keerai Smoothie Bowl',l:'Murungai Keerai Kootu',d:'Chicken Vegetable Clear Soup',s:'Fresh Fruit Bowl'},
+      {day:4,b:'Moong Dal Cheela (Protein Pancake)',l:'Rajma Brown Rice Bowl',d:'Palak Paneer with Millet Roti',s:'Sprouts Chaat'},
+      {day:5,b:'Egg White Veggie Omelette',l:'Grilled Fish with Steamed Vegetables',d:'Vazhaipoo Curry',s:'Coconut Water with Lime'},
+      {day:6,b:'Murungai Keerai Dosa',l:'Ponnanganni Keerai Rice',d:'Lentil Soup',s:'Groundnut Sundal'},
+      {day:7,b:'Greek Yogurt Parfait with Nuts',l:'Mixed Dal with Millet Roti',d:'Murungai Keerai Clear Soup',s:'Vallarai Juice'}
+    ],
+    benefit:'Vitamin C from Murungai (26× more than oranges). Zinc from seeds. Probiotics (yogurt). Anti-inflammatory (turmeric). Antioxidants from sprouts & berries. Anti-ulcer (Manathakkali).'
+  }
+];
+
+function renderDuluPlans(){
+  var grid=document.getElementById('duluPlansGrid'); if(!grid) return;
+  grid.innerHTML=DOLU_PLANS.map(function(plan){
+    return '<div style="background:rgba(255,255,255,.13);border-radius:12px;padding:16px;cursor:pointer;border:1.5px solid rgba(255,255,255,.2)" onclick="showDuluPlan(\''+plan.id+'\')" onmouseover="this.style.background=\'rgba(255,255,255,.22)\'" onmouseout="this.style.background=\'rgba(255,255,255,.13)\'">'+
+      '<div style="font-size:14px;font-weight:800;margin-bottom:4px">'+plan.title+'</div>'+
+      '<div style="font-size:11px;opacity:.85;margin-bottom:8px">'+plan.subtitle+'</div>'+
+      '<div style="font-size:11px;opacity:.75;line-height:1.5">'+plan.benefit.substring(0,80)+'...</div>'+
+      '<div style="margin-top:10px;font-size:12px;font-weight:700;opacity:.9">View 7-Day Plan →</div>'+
+    '</div>';
+  }).join('');
+}
+
+function showDuluPlan(id){
+  var plan=DOLU_PLANS.find(function(p){ return p.id===id; });
+  if(!plan) return;
+  var el=document.getElementById('duluPlanOverlay'); if(el) el.remove();
+  var rows=plan.days.map(function(d){
+    return '<tr style="border-bottom:1px solid #e8e8e8">'+
+      '<td style="padding:8px 12px;font-weight:700;color:'+plan.color+';white-space:nowrap">Day '+d.day+'</td>'+
+      '<td style="padding:8px 10px;font-size:11px">'+d.b+'</td>'+
+      '<td style="padding:8px 10px;font-size:11px">'+d.l+'</td>'+
+      '<td style="padding:8px 10px;font-size:11px">'+d.d+'</td>'+
+      '<td style="padding:8px 10px;font-size:11px">'+d.s+'</td>'+
+    '</tr>';
+  }).join('');
+  var ov=document.createElement('div');
+  ov.id='duluPlanOverlay';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px';
+  ov.onclick=function(e){ if(e.target===ov) ov.remove(); };
+  ov.innerHTML='<div style="background:#fff;border-radius:16px;max-width:720px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.25)">'+
+    '<div style="background:linear-gradient(135deg,'+plan.color+',#43A047 130%);padding:20px 22px;border-radius:16px 16px 0 0;color:#fff">'+
+      '<div style="font-size:18px;font-weight:800;margin-bottom:4px">'+plan.title+'</div>'+
+      '<div style="font-size:12px;opacity:.85">'+plan.subtitle+' — Curated by Dolu Baddy 🌟</div>'+
+    '</div>'+
+    '<div style="padding:20px 22px">'+
+      '<div style="background:'+plan.bg+';border-radius:9px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:'+plan.color+';line-height:1.7">💡 <b>Benefits:</b> '+plan.benefit+'</div>'+
+      '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">'+
+        '<thead><tr style="background:'+plan.color+';color:#fff">'+
+          '<th style="padding:9px 12px;text-align:left;font-size:12px;border-radius:8px 0 0 0">Day</th>'+
+          '<th style="padding:9px 12px;text-align:left;font-size:12px">☀️ Breakfast</th>'+
+          '<th style="padding:9px 12px;text-align:left;font-size:12px">🌿 Lunch</th>'+
+          '<th style="padding:9px 12px;text-align:left;font-size:12px">🌙 Dinner</th>'+
+          '<th style="padding:9px 12px;text-align:left;font-size:12px;border-radius:0 8px 0 0">🥜 Snack</th>'+
+        '</tr></thead>'+
+        '<tbody>'+rows+'</tbody>'+
+      '</table></div>'+
+      '<div style="font-size:12px;color:#8B5E52;margin-top:14px;padding:10px 14px;background:#FFF8F0;border-radius:8px;line-height:1.6">📌 <b>Dolu Baddy\'s Note:</b> Adjust quantities based on your daily calorie target. Drink 2.5–3 litres of water daily. Add a 30-minute evening walk for best results. Consistency is the key — follow for 7 days and feel the difference! 🌟</div>'+
+    '</div>'+
+    '<div style="padding:0 22px 22px">'+
+      '<button onclick="document.getElementById(\'duluPlanOverlay\').remove()" style="width:100%;padding:14px;background:linear-gradient(135deg,'+plan.color+',#43A047 130%);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">✓ I\'ll follow this plan!</button>'+
+    '</div>'+
+  '</div>';
+  document.body.appendChild(ov);
+}
+
 function renderDietTab(){
   renderDietMembers();
+  renderDuluPlans();
+  var qb=document.getElementById('dietQuoteBanner');
+  if(qb) qb.textContent='"'+getDietQuote()+'"';
 }
 
 </script>
