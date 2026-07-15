@@ -928,6 +928,7 @@
   <div class="stats-grid" id="statsGrid"></div>
 
   <div id="tab-plan" class="tab-content">
+    <div id="dietMembersNote" style="display:none;margin-bottom:10px;padding:10px 14px;background:linear-gradient(135deg,#E8F5E9,#F1F8E9);border:1.5px solid #A5D6A7;border-radius:10px;font-size:12px;color:#1B5E20"></div>
     <div class="toolbar">
       <input class="search-input" id="searchInput" placeholder="🔍 Search meals..." oninput="renderPlan()"/>
       <div class="filter-btns">
@@ -1096,11 +1097,21 @@
       </div>
 
     </div>
+
+    <!-- FAMILY MENU ALLOCATION CARD -->
+    <div class="pref-card pref-wide" style="margin-top:16px">
+      <div class="pref-title">&#128106; Family Menu Allocation</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Set each family member's menu type and enable WhatsApp daily menu delivery. Member names come from <strong>Profile &#8594; Family Members</strong>.</p>
+      <div id="familyMenuAllocCard">
+        <div style="text-align:center;padding:20px;color:#8B5E52;font-size:13px">Loading family members...</div>
+      </div>
+    </div>
+
     <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
       <button class="btn-primary" onclick="savePreferenceSettings()" style="background:linear-gradient(135deg,#2E7D32,#43A047);padding:12px 28px;font-size:14px">
         &#10003; Save Settings
       </button>
-      <p style="font-size:12px;color:var(--muted)">Your diet, spice and household settings will be saved to your profile.</p>
+      <p style="font-size:12px;color:var(--muted)">Your diet, spice, household & family menu allocation settings will be saved.</p>
     </div>
   </div>
 
@@ -1566,6 +1577,7 @@
 
 
   <div id="tab-plan" class="tab-content">
+    <div id="dietMembersNote" style="display:none;margin-bottom:10px;padding:10px 14px;background:linear-gradient(135deg,#E8F5E9,#F1F8E9);border:1.5px solid #A5D6A7;border-radius:10px;font-size:12px;color:#1B5E20"></div>
     <div class="toolbar">
       <input class="search-input" id="searchInput" placeholder="🔍 Search meals..." oninput="renderPlan()"/>
       <div class="filter-btns">
@@ -1734,11 +1746,21 @@
       </div>
 
     </div>
+
+    <!-- FAMILY MENU ALLOCATION CARD -->
+    <div class="pref-card pref-wide" style="margin-top:16px">
+      <div class="pref-title">&#128106; Family Menu Allocation</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Set each family member's menu type and enable WhatsApp daily menu delivery. Member names come from <strong>Profile &#8594; Family Members</strong>.</p>
+      <div id="familyMenuAllocCard">
+        <div style="text-align:center;padding:20px;color:#8B5E52;font-size:13px">Loading family members...</div>
+      </div>
+    </div>
+
     <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
       <button class="btn-primary" onclick="savePreferenceSettings()" style="background:linear-gradient(135deg,#2E7D32,#43A047);padding:12px 28px;font-size:14px">
         &#10003; Save Settings
       </button>
-      <p style="font-size:12px;color:var(--muted)">Your diet, spice and household settings will be saved to your profile.</p>
+      <p style="font-size:12px;color:var(--muted)">Your diet, spice, household & family menu allocation settings will be saved.</p>
     </div>
   </div>
 
@@ -2859,6 +2881,29 @@ function buildGroceryList(){
   return Object.values(groc).sort((a,b)=>a.item.localeCompare(b.item));
 }
 
+function getDietMembersForGrocery(){
+  var result=[];
+  try{
+    var prof=getMyProfile();
+    var savedDietMembers=loadDietMembers();
+    (prof.familyMembers||[]).forEach(function(m){
+      if(m.menuType==='diet'&&(m.name||'').trim()){
+        var dm=savedDietMembers.find(function(d){return d.name.toLowerCase()===m.name.trim().toLowerCase();});
+        var dailyCost=0;
+        if(dm&&typeof DIET_DB!=='undefined'){
+          var dayIdx=new Date().getDate()-1;
+          ['breakfast','lunch','dinner','snacks'].forEach(function(slot){
+            var meals=DIET_DB[slot]||[];
+            if(meals.length) dailyCost+=(meals[dayIdx%meals.length].price||0);
+          });
+        }
+        result.push({name:m.name.trim(),cat:dm?dm.cat:'',cal:dm?dm.cal:0,dailyCost:dailyCost,monthlyCost:dailyCost*30});
+      }
+    });
+  }catch(e){}
+  return result;
+}
+
 function getPrice(item,basePrice){
   const k=item.toLowerCase();
   return state.priceMode==='manual'&&state.customPrices[k]!=null?state.customPrices[k]:basePrice;
@@ -3051,26 +3096,51 @@ function renderFamilyMembersGrid(){
   var rels=['Husband','Wife','Father','Mother','Son','Daughter','Brother','Sister','Grandfather','Grandmother','Other'];
   _familyMembers.forEach(function(m,idx){
     var row=document.createElement('div');
-    row.style.cssText='display:grid;grid-template-columns:1fr 1fr 100px auto;gap:10px;align-items:end;padding:12px 14px;background:#FFF5EF;border-radius:10px;border:1px solid #F5D0C0';
+    row.style.cssText='padding:12px 14px;background:#FFF5EF;border-radius:10px;border:1px solid #F5D0C0';
     var opts=rels.map(function(r){return '<option value="'+r+'"'+(m.relation===r?' selected':'')+'>'+r+'</option>';}).join('');
+    var isNormal=(!m.menuType||m.menuType==='normal');
+    var waOn=m.whatsappEnabled?true:false;
     row.innerHTML=
-      '<div><label style="font-size:11px;font-weight:600;color:#8B5E52;display:block;margin-bottom:4px">Name</label>'+
-      '<input type="text" value="'+((m.name||'').replace(/"/g,'&quot;'))+'" placeholder="Member name" '+
-      'style="width:100%;padding:8px 10px;border-radius:7px;border:1.5px solid #E8D5C4;font-size:13px;outline:none;box-sizing:border-box" '+
-      'oninput="_familyMembers['+idx+'].name=this.value" onfocus="this.style.borderColor=\'var(--primary)\'" onblur="this.style.borderColor=\'#E8D5C4\'"/></div>'+
-      '<div><label style="font-size:11px;font-weight:600;color:#8B5E52;display:block;margin-bottom:4px">Relation</label>'+
-      '<select style="width:100%;padding:8px 10px;border-radius:7px;border:1.5px solid #E8D5C4;font-size:13px;outline:none;box-sizing:border-box;background:#fff" '+
-      'onchange="_familyMembers['+idx+'].relation=this.value">'+opts+'</select></div>'+
-      '<div><label style="font-size:11px;font-weight:600;color:#8B5E52;display:block;margin-bottom:4px">Age</label>'+
-      '<input type="number" min="0" max="120" value="'+(m.age||'')+'" placeholder="Age" '+
-      'style="width:100%;padding:8px 10px;border-radius:7px;border:1.5px solid #E8D5C4;font-size:13px;outline:none;box-sizing:border-box" '+
-      'oninput="_familyMembers['+idx+'].age=this.value" onfocus="this.style.borderColor=\'var(--primary)\'" onblur="this.style.borderColor=\'#E8D5C4\'"/></div>'+
-      '<div><button onclick="removeFamilyMember('+idx+')" style="padding:9px 13px;background:#FBE9E7;color:#C62828;border:1.5px solid #FFCDD2;border-radius:8px;cursor:pointer;font-size:16px;font-weight:700">&#215;</button></div>';
+      '<div style="display:grid;grid-template-columns:1fr 1fr 100px auto;gap:10px;align-items:end;margin-bottom:10px">'+
+        '<div><label style="font-size:11px;font-weight:600;color:#8B5E52;display:block;margin-bottom:4px">Name</label>'+
+        '<input type="text" value="'+((m.name||'').replace(/"/g,'&quot;'))+'" placeholder="Member name" '+
+        'style="width:100%;padding:8px 10px;border-radius:7px;border:1.5px solid #E8D5C4;font-size:13px;outline:none;box-sizing:border-box" '+
+        'oninput="_familyMembers['+idx+'].name=this.value" onfocus="this.style.borderColor=\'var(--primary)\'" onblur="this.style.borderColor=\'#E8D5C4\'"/></div>'+
+        '<div><label style="font-size:11px;font-weight:600;color:#8B5E52;display:block;margin-bottom:4px">Relation</label>'+
+        '<select style="width:100%;padding:8px 10px;border-radius:7px;border:1.5px solid #E8D5C4;font-size:13px;outline:none;box-sizing:border-box;background:#fff" '+
+        'onchange="_familyMembers['+idx+'].relation=this.value">'+opts+'</select></div>'+
+        '<div><label style="font-size:11px;font-weight:600;color:#8B5E52;display:block;margin-bottom:4px">Age</label>'+
+        '<input type="number" min="0" max="120" value="'+(m.age||'')+'" placeholder="Age" '+
+        'style="width:100%;padding:8px 10px;border-radius:7px;border:1.5px solid #E8D5C4;font-size:13px;outline:none;box-sizing:border-box" '+
+        'oninput="_familyMembers['+idx+'].age=this.value" onfocus="this.style.borderColor=\'var(--primary)\'" onblur="this.style.borderColor=\'#E8D5C4\'"/></div>'+
+        '<div><button onclick="removeFamilyMember('+idx+')" style="padding:9px 13px;background:#FBE9E7;color:#C62828;border:1.5px solid #FFCDD2;border-radius:8px;cursor:pointer;font-size:16px;font-weight:700">&#215;</button></div>'+
+      '</div>'+
+      '<div style="display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding-top:10px;border-top:1px dashed #F5D0C0">'+
+        '<div><label style="font-size:11px;font-weight:600;color:#8B5E52;display:block;margin-bottom:4px">&#128241; Mobile (WhatsApp)</label>'+
+        '<input type="tel" value="'+(m.mobile||'')+'" placeholder="+91 98765 43210" '+
+        'style="width:100%;padding:7px 10px;border-radius:7px;border:1.5px solid #E8D5C4;font-size:13px;outline:none;box-sizing:border-box" '+
+        'oninput="_familyMembers['+idx+'].mobile=this.value" onfocus="this.style.borderColor=\'var(--primary)\'" onblur="this.style.borderColor=\'#E8D5C4\'"/></div>'+
+        '<div style="display:flex;flex-direction:column;gap:4px;align-items:center">'+
+          '<label style="font-size:11px;font-weight:600;color:#8B5E52">&#127869;&#65039; Menu Type</label>'+
+          '<div style="display:flex;gap:3px">'+
+            '<button onclick="setFamilyMenuType('+idx+',\'normal\')" style="padding:5px 9px;font-size:11px;font-weight:700;border-radius:6px;border:1.5px solid '+(isNormal?'#2E7D32':'#E8D5C4')+';cursor:pointer;background:'+(isNormal?'#2E7D32':'transparent')+';color:'+(isNormal?'#fff':'#8B5E52')+'">Normal</button>'+
+            '<button onclick="setFamilyMenuType('+idx+',\'diet\')" style="padding:5px 9px;font-size:11px;font-weight:700;border-radius:6px;border:1.5px solid '+(isNormal?'#E8D5C4':'#1B5E20')+';cursor:pointer;background:'+(isNormal?'transparent':'#1B5E20')+';color:'+(isNormal?'#8B5E52':'#fff')+'">&#129361; Diet</button>'+
+          '</div>'+
+        '</div>'+
+        '<div style="display:flex;flex-direction:column;gap:4px;align-items:center">'+
+          '<label style="font-size:11px;font-weight:600;color:#8B5E52">&#128242; WA Enable</label>'+
+          '<div onclick="toggleFamilyWA('+idx+')" title="Toggle WhatsApp daily menu" style="width:44px;height:24px;border-radius:12px;background:'+(waOn?'#25D366':'#ccc')+';cursor:pointer;position:relative;transition:background .2s;flex-shrink:0">'+
+            '<div style="position:absolute;top:2px;left:'+(waOn?'22':'2')+'px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
     grid.appendChild(row);
   });
 }
 
-function addFamilyMember(){ _familyMembers.push({name:'',relation:'Other',age:''}); renderFamilyMembersGrid(); }
+function setFamilyMenuType(idx,type){ _familyMembers[idx].menuType=type; renderFamilyMembersGrid(); }
+function toggleFamilyWA(idx){ _familyMembers[idx].whatsappEnabled=!_familyMembers[idx].whatsappEnabled; renderFamilyMembersGrid(); }
+function addFamilyMember(){ _familyMembers.push({name:'',relation:'Other',age:'',menuType:'normal',mobile:'',whatsappEnabled:false}); renderFamilyMembersGrid(); }
 function removeFamilyMember(idx){ _familyMembers.splice(idx,1); renderFamilyMembersGrid(); }
 
 function saveProfile(){
@@ -3457,8 +3527,8 @@ function switchTab(tab,btn){
   if(tab==='grocery') renderGrocery();
   if(tab==='recipes') renderRecipes();
   if(tab==='menu') renderDailyMenu();
-  if(tab==='prefs') renderStateGrid();
-  if(tab==='profile') renderProfile();
+  if(tab==='prefs'){ renderStateGrid(); renderFamilyMenuAllocation(); }
+  if(tab==='profile'){ renderProfile(); }
   if(tab==='history'){ renderHistory(); renderMyRequests(); }
   if(tab==='diet') renderDietTab();
   closeDatePicker();
@@ -3538,6 +3608,20 @@ function setFilter(slot,btn){
 }
 
 function renderPlan(){
+  // Diet members banner
+  document.querySelectorAll('[id="dietMembersNote"]').forEach(function(note){
+    var dm=getDietMembersForGrocery();
+    if(dm.length){
+      note.style.display='block';
+      note.innerHTML='&#129361; <strong>Diet Members on this plan:</strong> '+
+        dm.map(function(m){return '<strong>'+m.name+'</strong> ('+m.cat+')';}).join(', ')+
+        ' — see <a href="#" onclick="event.preventDefault();switchTab(\'diet\',null)" style="color:#1B5E20;font-weight:700">Diet tab</a> for their personalised meals.'+
+        ' <span style="float:right;color:#2E7D32;font-weight:700">&#8377;'+dm.reduce(function(s,m){return s+m.monthlyCost;},0).toLocaleString()+'/mo diet budget</span>';
+    } else {
+      note.style.display='none';
+    }
+  });
+
   const search=document.getElementById('searchInput').value.toLowerCase();
   state.searchTerm=search;
   const filtered=state.mealPlan.filter(d=>{
@@ -3857,6 +3941,36 @@ function renderGrocery(){
     emailAll.innerHTML = '<button onclick="emailGroceryToShop(\'all\')" style="padding:9px 22px;background:linear-gradient(135deg,#C8604A,#E65100);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer">✉ Email Full Grocery List to Shop</button>';
     grid.appendChild(emailAll);
   }
+
+  // Diet members supplementary note
+  var dietGrocMembers=getDietMembersForGrocery();
+  if(dietGrocMembers.length){
+    var totalDietCost=dietGrocMembers.reduce(function(s,m){return s+m.monthlyCost;},0);
+    var dietNote=document.createElement('div');
+    dietNote.style.cssText='margin:14px 0 4px;padding:14px 16px;background:linear-gradient(135deg,#E8F5E9,#F1F8E9);border:1.5px solid #A5D6A7;border-radius:12px';
+    dietNote.innerHTML='<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">'+
+      '<span style="font-size:18px">&#129361;</span>'+
+      '<div style="font-size:13px;font-weight:700;color:#1B5E20">Diet Members — Additional Grocery Budget</div>'+
+      '<div style="font-size:11px;background:#A5D6A7;color:#1B5E20;padding:2px 8px;border-radius:20px;font-weight:700">'+dietGrocMembers.length+' member'+(dietGrocMembers.length>1?'s':'')+'</div>'+
+    '</div>'+
+    dietGrocMembers.map(function(dm){
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:#fff;border-radius:8px;margin-bottom:5px">'+
+        '<div>'+
+          '<div style="font-size:13px;font-weight:700;color:#2E7D32">'+dm.name+' <span style="font-size:11px;color:#66BB6A;font-weight:600">('+dm.cat+')</span></div>'+
+          (dm.cal?'<div style="font-size:11px;color:#8B5E52">~'+dm.cal+' kcal/day target</div>':'')+'</div>'+
+        '<div style="text-align:right">'+
+          '<div style="font-size:14px;font-weight:800;color:#1B5E20">&#8377;'+(dm.monthlyCost||0).toLocaleString()+'/mo</div>'+
+          '<div style="font-size:10px;color:#8B5E52">~&#8377;'+Math.round((dm.monthlyCost||0)/30)+'/day</div>'+
+        '</div>'+
+      '</div>';
+    }).join('')+
+    '<div style="border-top:1px solid #C8E6C9;padding-top:8px;margin-top:4px;display:flex;justify-content:space-between;align-items:center">'+
+      '<span style="font-size:12px;color:#2E7D32;font-weight:600">Total diet member budget</span>'+
+      '<span style="font-size:15px;font-weight:800;color:#1B5E20">&#8377;'+totalDietCost.toLocaleString()+'/month</span>'+
+    '</div>'+
+    '<div style="font-size:11px;color:#8B5E52;margin-top:8px">&#128161; These estimates are based on DIET_DB meal prices. Actual ingredient shopping varies by availability. Go to <strong>Diet tab &#8594; Request Budget</strong> to send this to admin.</div>';
+    grid.appendChild(dietNote);
+  }
 }
 
 function selectAllGrocery(){
@@ -3930,9 +4044,119 @@ function changeHousehold(cat, delta){
   document.getElementById('hdr-sub').textContent = getDaysInMonth(state.selectedMonth,state.selectedYear)+'-day meal plan · '+total+' people';
   renderStats(); renderGrocery();
 }
+var _prefFamilyAlloc=[];
+
+function renderFamilyMenuAllocation(){
+  var members=[];
+  try{ var prof=getMyProfile(); members=(prof.familyMembers||[]).filter(function(m){return(m.name||'').trim();}); }catch(e){}
+  _prefFamilyAlloc=members.map(function(m){return Object.assign({menuType:'normal',mobile:'',whatsappEnabled:false},m);});
+  document.querySelectorAll('[id="familyMenuAllocCard"]').forEach(function(card){
+    if(!members.length){
+      card.innerHTML='<div style="text-align:center;padding:20px;color:#8B5E52;font-size:13px">No family members yet. Go to <strong>&#128100; Profile &#8594; Family Members</strong> to add your family first.</div>';
+      return;
+    }
+    var hdr='<div style="display:grid;grid-template-columns:1.5fr 130px 1fr 90px;gap:10px;padding:6px 12px;margin-bottom:4px">'+
+      '<div style="font-size:11px;font-weight:700;color:#8B5E52;text-transform:uppercase">Member</div>'+
+      '<div style="font-size:11px;font-weight:700;color:#8B5E52;text-transform:uppercase">Menu Type</div>'+
+      '<div style="font-size:11px;font-weight:700;color:#8B5E52;text-transform:uppercase">&#128241; Mobile</div>'+
+      '<div style="font-size:11px;font-weight:700;color:#8B5E52;text-transform:uppercase">&#128242; WA</div>'+
+      '</div>';
+    var rows=_prefFamilyAlloc.map(function(m,idx){
+      var isNormal=(!m.menuType||m.menuType==='normal');
+      var waOn=m.whatsappEnabled?true:false;
+      return '<div style="display:grid;grid-template-columns:1.5fr 130px 1fr 90px;gap:10px;align-items:center;padding:10px 12px;background:'+(idx%2===0?'#FFF5EF':'#fff')+';border-radius:8px;margin-bottom:3px">'+
+        '<div>'+
+          '<div style="font-size:13px;font-weight:700;color:#5a3e36">'+(m.name||'?')+'</div>'+
+          '<div style="font-size:11px;color:#8B5E52">'+(m.relation||'')+(m.age?' · '+m.age+' yrs':'')+'</div>'+
+        '</div>'+
+        '<div style="display:flex;gap:4px">'+
+          '<button onclick="setPrefMenuType('+idx+',\'normal\')" style="padding:5px 9px;font-size:11px;font-weight:700;border-radius:6px;border:1.5px solid '+(isNormal?'#2E7D32':'#E8D5C4')+';cursor:pointer;background:'+(isNormal?'#2E7D32':'transparent')+';color:'+(isNormal?'#fff':'#8B5E52')+'">Normal</button>'+
+          '<button onclick="setPrefMenuType('+idx+',\'diet\')" style="padding:5px 9px;font-size:11px;font-weight:700;border-radius:6px;border:1.5px solid '+(isNormal?'#E8D5C4':'#1B5E20')+';cursor:pointer;background:'+(isNormal?'transparent':'#1B5E20')+';color:'+(isNormal?'#8B5E52':'#fff')+'">&#129361; Diet</button>'+
+        '</div>'+
+        '<div style="font-size:12px;color:'+(m.mobile?'#5a3e36':'#ccc')+'">'+(m.mobile||'Not set')+'</div>'+
+        '<div style="display:flex;align-items:center;gap:6px">'+
+          '<div onclick="togglePrefWA('+idx+')" style="width:40px;height:22px;border-radius:11px;background:'+(waOn?'#25D366':'#ccc')+';cursor:pointer;position:relative;flex-shrink:0;transition:background .2s">'+
+            '<div style="position:absolute;top:1px;left:'+(waOn?'19':'1')+'px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div>'+
+          '</div>'+
+          (waOn&&m.mobile?'<button onclick="sendWhatsAppDayMenu('+idx+')" style="padding:4px 8px;background:#25D366;color:#fff;border:none;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap">&#128242; Send</button>':'<span style="font-size:10px;color:#ccc">'+(waOn&&!m.mobile?'Add mobile':'')+'</span>')+
+        '</div>'+
+      '</div>';
+    }).join('');
+    card.innerHTML=
+      '<div style="background:#E8F5E9;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#2E7D32;line-height:1.5">'+
+        '&#128161; Set each person\'s menu type. <strong>Diet</strong> members get DIET_DB health meals; <strong>Normal</strong> members get regular Tamil Nadu meals. '+
+        'Click <strong>Save Settings</strong> below to apply changes.'+
+      '</div>'+
+      hdr+rows+
+      '<div style="margin-top:10px;background:#FFF9C4;padding:8px 12px;border-radius:8px;font-size:11px;color:#795548;line-height:1.5">'+
+        '&#9888;&#65039; <strong>WhatsApp Automation:</strong> True 5:30 AM scheduling needs a server. The &#128242; Send button opens WhatsApp Web with today\'s full menu pre-filled — click it manually to send. Full automation is a planned feature.'+
+      '</div>';
+  });
+}
+
+function setPrefMenuType(idx,type){ _prefFamilyAlloc[idx].menuType=type; renderFamilyMenuAllocation(); }
+function togglePrefWA(idx){ _prefFamilyAlloc[idx].whatsappEnabled=!_prefFamilyAlloc[idx].whatsappEnabled; renderFamilyMenuAllocation(); }
+
+function sendWhatsAppDayMenu(idx){
+  var m=_prefFamilyAlloc[idx];
+  if(!m||!m.mobile){ showToast('Please add a mobile number for '+((m&&m.name)||'this member')+' first.'); return; }
+  var phone=(m.mobile||'').replace(/[^0-9]/g,'');
+  if(phone.length===10) phone='91'+phone;
+  var today=new Date();
+  var dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var dateStr=dayNames[today.getDay()]+', '+today.getDate()+' '+monthNames[today.getMonth()]+' '+today.getFullYear();
+  var menuLines='';
+  if(m.menuType==='diet'){
+    var dietMembers=loadDietMembers();
+    var dm=dietMembers.find(function(d){return d.name.toLowerCase()===(m.name||'').toLowerCase();});
+    if(dm&&typeof DIET_DB!=='undefined'){
+      var dayIdx=today.getDate()-1;
+      var bf=DIET_DB.breakfast&&DIET_DB.breakfast.length?DIET_DB.breakfast[dayIdx%DIET_DB.breakfast.length]:null;
+      var sn=DIET_DB.snacks&&DIET_DB.snacks.length?DIET_DB.snacks[dayIdx%DIET_DB.snacks.length]:null;
+      var lu=DIET_DB.lunch&&DIET_DB.lunch.length?DIET_DB.lunch[dayIdx%DIET_DB.lunch.length]:null;
+      var di=DIET_DB.dinner&&DIET_DB.dinner.length?DIET_DB.dinner[dayIdx%DIET_DB.dinner.length]:null;
+      menuLines='🥗 *Diet Menu* (BMI '+dm.bmi+' — '+dm.cat+')\n'+
+        (bf?'☀️ Breakfast: '+bf.name+'\n':'')+
+        (sn?'🍵 Mid-Morning: '+sn.name+'\n':'')+
+        (lu?'🌞 Lunch: '+lu.name+'\n':'')+
+        (di?'🌙 Dinner: '+di.name+'\n':'')+
+        '\n📊 Target: ~'+dm.cal+' kcal/day'+
+        (dm.targetWeight?'\n🎯 Goal: Reach '+dm.targetWeight+'kg':'');
+    } else {
+      menuLines='🥗 *Diet Menu*\n(Please set up a diet plan in the Diet tab for '+m.name+')';
+    }
+  } else {
+    var plan=window.state&&state.mealPlan;
+    var todayPlan=plan&&plan.find(function(d){return d.day===today.getDate();});
+    if(todayPlan){
+      menuLines='🍛 *Regular Menu*\n'+
+        (todayPlan.breakfast?'☀️ Breakfast: '+todayPlan.breakfast.name+'\n':'')+
+        (todayPlan.lunch?'🌞 Lunch: '+todayPlan.lunch.name+'\n':'')+
+        (todayPlan.dinner?'🌙 Dinner: '+todayPlan.dinner.name:'');
+    } else {
+      menuLines='🍛 *Regular Menu*\n(Open Meal Plan tab to generate the monthly plan first)';
+    }
+  }
+  var msg='🌿 *Jeevamithran Daily Menu*\n👤 '+m.name+'\n📅 '+dateStr+'\n\n'+menuLines+'\n\n💚 Stay healthy, stay happy!\n— Jeevamithran App';
+  window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank');
+}
+
 function savePreferenceSettings(){
+  if(_prefFamilyAlloc&&_prefFamilyAlloc.length&&currentUser&&!currentUser.isGuest){
+    var allProf=loadAllProfiles();
+    var prof=allProf[currentUser.username]||{};
+    var existing=prof.familyMembers||[];
+    _prefFamilyAlloc.forEach(function(pa){
+      var match=existing.find(function(e){return e.name===pa.name&&e.relation===pa.relation;});
+      if(match){ match.menuType=pa.menuType; match.mobile=pa.mobile; match.whatsappEnabled=pa.whatsappEnabled; }
+    });
+    prof.familyMembers=existing;
+    allProf[currentUser.username]=prof;
+    saveAllProfiles(allProf);
+  }
   saveUserStateNow();
-  showToast('✓ Preferences saved! Diet, spice & household settings updated.');
+  showToast('&#10003; Preferences saved! Settings & family menu allocation updated.');
 }
 
 function setDietMode(mode){
